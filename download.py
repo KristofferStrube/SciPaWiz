@@ -24,19 +24,11 @@ def extract_paper_information(paper):
     """
 
 
-# Retrieve the author's data, fill-in, and print
-search_query = scholarly.search_author(scholar)
-author = next(search_query).fill()
-with open(f"{scholar_dir}/{scholar}", 'w+') as f:
-    f.write(extract_author_information(author))
-
-
 citingauthors = set()
 
-with open(f"{scholar_dir}/citingpapers", "w+") as f:
-    for pub in author.publications:
-        # citations_titles = [citation.bib['title'] for citation in pub.citedby]
-        sleep(15)
+
+def bypass_rate_limit_pub(pub, f):
+    try:
         for citation in pub.citedby:
             f.write(f"{citation.bib['title']}")
             citers = citation.bib['author']
@@ -45,11 +37,35 @@ with open(f"{scholar_dir}/citingpapers", "w+") as f:
                     citingauthors.add(citer)
             except:
                 pass
+    except:
+        sleep(5*60)
+        bypass_rate_limit_pub(pub, f)
 
+
+def bypass_rate_limit_citing(citingauthor, f):
+    try:
+        search_query = scholarly.search_author(citingauthor)
+        cauthor = next(search_query).fill()
+        f.write(f"{extract_author_information(cauthor)}\n")
+    except:
+        sleep(10*60)
+        bypass_rate_limit_citing(citingauthor, f)
+
+
+# Retrieve the author's data, fill-in, and print
+search_query = scholarly.search_author(scholar)
+author = next(search_query).fill()
+with open(f"{scholar_dir}/{scholar}", 'w+') as f:
+    f.write(extract_author_information(author))
+
+
+with open(f"{scholar_dir}/citingpapers", "w+") as f:
+    for pub in author.publications:
+        # citations_titles = [citation.bib['title'] for citation in pub.citedby]
+        sleep(15)
+        bypass_rate_limit_pub(pub, f)
+            
 
 with open(f"{scholar_dir}/citingauthors", 'w+') as f:
     for citingauthor in citingauthors:
-        search_query = scholarly.search_author(citingauthor)
-        sleep(15)
-        cauthor = next(search_query).fill()
-        f.write(f"{extract_author_information(cauthor)}\n")
+        bypass_rate_limit_citing(citingauthor, f)
