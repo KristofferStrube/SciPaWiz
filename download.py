@@ -5,7 +5,7 @@ import time
 
 scholar = 'Davide Mottin'
 scholar_dir = "files/DavideMottin"
-
+scholarly.use_tor(tor_sock_port=9050, tor_control_port=9051, tor_pw="scholarly_password")
 
 def sleep():
     time.sleep((30-5)*np.random.random()+5)
