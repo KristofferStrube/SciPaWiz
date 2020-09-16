@@ -1,92 +1,51 @@
-from scholarly import scholarly
-import numpy as np
-import time
-from fp.fp import FreeProxy
+import json
+import requests
+
+dir = "files/DavideMottin"
 
 
-scholar = 'Davide Mottin'
-scholar_dir = "files/DavideMottin"
-scholarly.use_tor(tor_sock_port=9050, tor_control_port=9051, tor_pw="scholarly_password")
+def download(query, author=True):
+    if author:
+        searchstring = f"https://dblp.org/search/publ/api?q=author%3A{query}%3A&format=json"
+
+    return json.loads(requests.get(searchstring).text)
 
 
-def sleep():
-    time.sleep((30-5)*np.random.random()+5)
+def download_papers_by_author(author_object):
+    papers_doi = [(hit['info']['title'], hit['info']['doi']) for hit in author_object['result']['hits']['hit'] if 'doi' in hit['info']]
+    with open(f"{dir}/papers_by_author", 'w+') as f:
+        for tuple in papers_doi:
+            f.write(f"{tuple[0]},{tuple[1]}\n")
+    return papers_doi
 
 
-def set_new_proxy():
-    while True:
-        proxy = FreeProxy(rand=True, timeout=1).get()
-        proxy_works = scholarly.use_proxy(http=proxy, https=proxy)
-        if proxy_works:
-            break
-    print("Working proxy:", proxy)
-    return proxy
+def load_papers_by_author(author):
+    papers_doi = []
+    with open(f"{dir}/papers_by_author") as f:
+        for line in f.readlines():
+            l = line.split(',')
+            papers_doi.append((l[0], l[1]))
+    return papers_doi
 
 
-def extract_author_information(author):
-    return f"""
-        name: {author.name}
-        affiliation: {author.affiliation}
-        citedby: {author.citedby}
-        citedby5y: {author.citedby5y}
-        cites_per_year: {author.cites_per_year}
-        hindex: {author.hindex}
-        hindex5y: {author.hindex5y}
-    """
+def download_citations_for_paper(author_dois):
+    citing_dois = []
+    for doi in author_dois:
+        doi = doi.strip('\n')
+        request_string = f"https://opencitations.net/index/api/v1/citations/{doi}"
+        res = json.loads(requests.get(request_string).text)
+        if len(res) > 0:
+            citing_dois.append(res[0]['citing'].strip("coci => "))
+        else:
+            print("No doi for this paper")
+    with open(f"{dir}/papers_citing_author", 'w+') as f:
+        for doi in citing_dois:
+            f.write(f"{doi}")
 
 
-def extract_paper_information(paper):
-    return f"""
-        citedby: {paper.citedby}
-    """
+def load_papers_citing_author():
+    with open(f"{dir}/papers_citing_author") as f:
+        return [x.strip('\n') for x in f.readlines()]
 
 
-citingauthors = set()
-
-
-def bypass_rate_limit_pub(pub, f):
-    try:
-        for citation in pub.citedby:
-            # sleep()
-            f.write(f"{citation.bib['title']}")
-            citers = citation.bib['author']
-            try:
-                for citer in citers:
-                    citingauthors.add(citer)
-            except:
-                pass
-    except:
-        set_new_proxy()
-        # sleep()
-        bypass_rate_limit_pub(pub, f)
-
-
-def bypass_rate_limit_citing(citingauthor, f):
-    try:
-        # sleep()
-        search_query = scholarly.search_author(citingauthor)
-        cauthor = next(search_query).fill()
-        f.write(f"{extract_author_information(cauthor)}\n")
-    except:
-        # sleep()
-        set_new_proxy()
-        bypass_rate_limit_citing(citingauthor, f)
-
-
-# Retrieve the author's data, fill-in, and print
-search_query = scholarly.search_author(scholar)
-author = next(search_query).fill()
-with open(f"{scholar_dir}/{scholar}", 'w+') as f:
-    f.write(extract_author_information(author))
-
-
-with open(f"{scholar_dir}/citingpapers", "w+") as f:
-    for pub in author.publications:
-        # sleep()
-        # citations_titles = [citation.bib['title'] for citation in pub.citedby]
-        bypass_rate_limit_pub(pub, f)
-
-
-with open(f"{scholar_dir}/citingauthors", 'w+') as f:
-    for citingauthor in citingauthors:
-        bypass_rate_limit_citing(citingauthor, f)
+print(load_papers_citing_author())
