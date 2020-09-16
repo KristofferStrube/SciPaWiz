@@ -39,7 +39,8 @@ def download_citations_for_paper(author_dois):
             text = requests.get(request_string).text
             res = json.loads(text)
             if len(res) > 0:
-                citing_dois.append(res[0]['citing'].strip("coci => "))
+                for citing_doi in res:
+                    citing_dois.append(citing_doi['citing'].strip("coci => "))
             else:
                 print("No doi for this paper")
         except:
@@ -55,8 +56,25 @@ def load_papers_citing_author():
         return [x.strip('\n') for x in f.readlines()]
 
 
-#res = download()
-#papers_by_author = download_papers_by_author(res)
-papers_by_author = load_papers_by_author()
-author_doi = [x for (y, x) in papers_by_author]
-print(download_citations_for_paper(author_doi))
+def get_authors_by_doi(doi):
+    request_string = f"https://opencitations.net/index/api/v1/metadata/{doi}"
+    try:
+        text = requests.get(request_string).text
+        res = json.loads(text)
+        if len(res) > 0:
+            for author_information in res:
+                return author_information['author']
+    except:
+        print("Trist panda")
+        return None
+
+
+def download_citing_authors(dois):
+    authors = [get_authors_by_doi(doi) for doi in dois]
+    authors = [x for x in authors if x is not None]
+    with open(f"{dir}/authors_citing_author", "w'") as f:
+        for author in authors:
+            f.write(f"{author}\n")
+
+
+download_citing_authors(load_papers_citing_author())
