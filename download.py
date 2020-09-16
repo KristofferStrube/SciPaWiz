@@ -72,7 +72,7 @@ def get_authors_by_doi(doi):
 def download_citing_authors(dois):
     authors = [get_authors_by_doi(doi) for doi in dois]
     authors = [x for x in authors if x is not None]
-    with open(f"{dir}/authors_citing_author", "w'") as f:
+    with open(f"{dir}/authors_citing_author", "w+") as f:
         for author in authors:
             f.write(f"{author}\n")
 
