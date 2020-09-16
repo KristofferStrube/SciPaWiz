@@ -1,13 +1,15 @@
 import json
 import requests
 
-dir = "files/DavideMottin"
+dir = "files/IvanDamgaard"
+query = "Ivan + Damgård"
 
 
-def download(query, author=True):
+def download(author=True):
     if author:
-        searchstring = f"https://dblp.org/search/publ/api?q=author%3A{query}%3A&format=json"
+        searchstring = f"https://dblp.org/search/publ/api?q=author%3A{query}%3A&format=json&h=1000"
 
+    print(searchstring)
     return json.loads(requests.get(searchstring).text)
 
 
@@ -19,7 +21,7 @@ def download_papers_by_author(author_object):
     return papers_doi
 
 
-def load_papers_by_author(author):
+def load_papers_by_author():
     papers_doi = []
     with open(f"{dir}/papers_by_author") as f:
         for line in f.readlines():
@@ -33,14 +35,19 @@ def download_citations_for_paper(author_dois):
     for doi in author_dois:
         doi = doi.strip('\n')
         request_string = f"https://opencitations.net/index/api/v1/citations/{doi}"
-        res = json.loads(requests.get(request_string).text)
-        if len(res) > 0:
-            citing_dois.append(res[0]['citing'].strip("coci => "))
-        else:
-            print("No doi for this paper")
+        try:
+            text = requests.get(request_string).text
+            res = json.loads(text)
+            if len(res) > 0:
+                citing_dois.append(res[0]['citing'].strip("coci => "))
+            else:
+                print("No doi for this paper")
+        except:
+            print(f"Error parsing json for {text}")
+
     with open(f"{dir}/papers_citing_author", 'w+') as f:
         for doi in citing_dois:
-            f.write(f"{doi}")
+            f.write(f"{doi}\n")
 
 
 def load_papers_citing_author():
@@ -48,4 +55,8 @@ def load_papers_citing_author():
         return [x.strip('\n') for x in f.readlines()]
 
 
-print(load_papers_citing_author())
+#res = download()
+#papers_by_author = download_papers_by_author(res)
+papers_by_author = load_papers_by_author()
+author_doi = [x for (y, x) in papers_by_author]
+print(download_citations_for_paper(author_doi))

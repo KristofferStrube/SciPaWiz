@@ -1,0 +1,191 @@
+Confidential Benchmarking Based on Multiparty Computation.,10.1007/978-3-662-54970-4_10
+Black-Box Transformations from Passive to Covert Security with Public Verifiability.,10.1007/978-3-030-56880-1_23
+Fast Threshold ECDSA with Honest Majority.,10.1007/978-3-030-57990-6_19
+Efficient UC Commitment Extension with Homomorphism for Free (and Applications).,10.1007/978-3-030-34621-8_22
+Stronger Leakage-Resilient and Non-Malleable Secret Sharing Schemes for General Access Structures.,10.1007/978-3-030-26951-7_18
+Proofs of Replicated Storage Without Timing Assumptions.,10.1007/978-3-030-26948-7_13
+Communication Lower Bounds for Statistically Secure MPC, With or Without Preprocessing.,10.1007/978-3-030-26951-7_3
+Commodity-Based 2PC for Arithmetic Circuits.,10.1007/978-3-030-35199-1_8
+New Primitives for Actively-Secure MPC over Rings with Applications to Private Machine Learning.,10.1109/SP.2019.00078
+Efficient Information-Theoretic Secure Multiparty Computation over Z/pkZ via Galois Rings.,10.1007/978-3-030-36030-6_19
+SPDℤ2k - Efficient MPC mod 2k for Dishonest Majority.,10.1007/978-3-319-96881-0_26
+Yet Another Compiler for Active Security or - Efficient MPC Over Arbitrary Rings.,10.1007/978-3-319-96881-0_27
+Compact Zero-Knowledge Proofs of Small Hamming Weight.,10.1007/978-3-319-76581-5_18
+More Efficient Commitments from Structured Lattice Assumptions.,10.1007/978-3-319-98113-0_20
+Continuous NMC Secure Against Permutations and Overwrites, with Applications to CCA Secure Commitments.,10.1007/978-3-030-03810-6_9
+Bounded Tamper Resilience - How to Go Beyond the Algebraic Barrier.,10.1007/S00145-015-9218-0
+Secure Arithmetic Computation with Constant Computational Overhead.,10.1007/978-3-319-63688-7_8
+The TinyTable Protocol for 2-Party Secure Computation, or - Gate-Scrambling Revisited.,10.1007/978-3-319-63688-7_6
+Amortized Complexity of Zero-Knowledge Proofs Revisited - Achieving Linear Soundness Slack.,10.1007/978-3-319-56620-7_17
+Linear-Time Non-Malleable Codes in the Bit-Wise Independent Tampering Model.,10.1007/978-3-319-72089-0_1
+Resource-Efficient OT Combiners with Active Security.,10.1007/978-3-319-70503-3_15
+Entangled cloud storage.,10.1016/J.FUTURE.2016.01.008
+Better Preprocessing for Secure Multiparty Computation.,10.1007/978-3-319-39555-5_18
+Non-Interactive Verifiable Secret Sharing for Monotone Circuits.,10.1007/978-3-319-31517-1_12
+Fast Oblivious AES A Dedicated Application of the MiniMac Protocol.,10.1007/978-3-319-31517-1_13
+How to Prove Knowledge of Small Secrets.,10.1007/978-3-662-53015-3_17
+Rate-1, Linear Time and Additively Homomorphic UC Commitments.,10.1007/978-3-662-53015-3_7
+On the Communication Required for Unconditionally Secure Multiplication.,10.1007/978-3-662-53008-5_16
+Unconditionally Secure Computation with Reduced Interaction.,10.1007/978-3-662-49896-5_15
+On Public Key Encryption from Noisy Codewords.,10.1007/978-3-662-49387-8_16
+Adaptively Secure Multi-Party Computation from LWE (via Equivocal FHE).,10.1007/978-3-662-49387-8_9
+Oblivious Transfer from Any Non-trivial Elastic Noisy Channel via Secret Key Agreement.,10.1007/978-3-662-53641-4_9
+Access Control Encryption - Enforcing Information Flow with Cryptography.,10.1007/978-3-662-53644-5_21
+Entangled Encodings and Data Entanglement.,10.1145/2732516.2732524
+Efficient Leakage Resilient Circuit Compilers.,10.1007/978-3-319-16715-2_17
+Linear Secret Sharing Schemes from Error Correcting Codes and Universal Hash Functions.,10.1007/978-3-662-46803-6_11
+On the Orthogonal Vector Problem and the Feasibility of Unconditionally Secure Leakage-Resilient Computation.,10.1007/978-3-319-17470-9_6
+The Chaining Lemma and Its Application.,10.1007/978-3-319-17470-9_11
+Additively Homomorphic UC Commitments with Optimal Amortized Overhead.,10.1007/978-3-662-46447-2_22
+On the Amortized Complexity of Zero-Knowledge Protocols.,10.1007/S00145-013-9145-X
+How to re-use a one-time pad safely and almost optimally even if P = NP.,10.1007/S11047-014-9454-5
+Secure identification and QKD in the bounded-quantum-storage model.,10.1016/J.TCS.2014.09.014
+Compact VSS and Efficient Homomorphic UC Commitments.,10.1007/978-3-662-45608-8_12
+Universally Composable Symbolic Analysis for Two-Party Protocols Based on Homomorphic Encryption.,10.1007/978-3-642-55220-5_38
+On the Security of Distributed Multiprime RSA.,10.1007/978-3-319-15943-0_2
+Adaptive versus Static Security in the UC Model.,10.1007/978-3-319-12475-9_2
+Publicly Auditable Secure Multi-Party Computation.,10.1007/978-3-319-10879-7_11
+An Empirical Study and Some Improvements of the MiniMac Protocol for Secure Computation.,10.1007/978-3-319-10879-7_23
+Bounded Tamper Resilience - How to Go beyond the Algebraic Barrier.,10.1007/978-3-642-42045-0_8
+Unconditionally Secure and Universally Composable Commitments from Physical Assumptions.,10.1007/978-3-642-42045-0_6
+Efficient Multiparty Protocols via Log-Depth Threshold Formulae - (Extended Abstract).,10.1007/978-3-642-40084-1_11
+Practical Covertly Secure MPC for Dishonest Majority - Or - Breaking the SPDZ Limits.,10.1007/978-3-642-40203-6_1
+Superposition Attacks on Cryptographic Protocols.,10.1007/978-3-319-04268-8_9
+Secure Key Management in the Cloud.,10.1007/978-3-642-45239-0_16
+Constant-Overhead Secure Computation of Boolean Circuits using Preprocessing.,10.1007/978-3-642-36594-2_35
+Multiparty Computation from Somewhat Homomorphic Encryption.,10.1007/978-3-642-32009-5_38
+Secure Computation, I/O-Efficient Algorithms and Distributed Signatures.,10.1007/978-3-642-27954-6_18
+On the Amortized Complexity of Zero Knowledge Protocols for Multiplicative Relations.,10.1007/978-3-642-32284-6_4
+DDH-Like Assumptions Based on Extension Rings.,10.1007/978-3-642-30057-8_38
+Implementing AES via an Actively/Covertly Secure Dishonest-Majority MPC Protocol.,10.1007/978-3-642-32928-9_14
+Zero-Knowledge Proofs with Low Amortized Communication from Lattice Assumptions.,10.1007/978-3-642-32928-9_3
+Secure Two-Party Computation with Low Communication.,10.1007/978-3-642-28914-9_4
+Semi-homomorphic Encryption and Multiparty Computation.,10.1007/978-3-642-20465-4_11
+Quantum Communication Attacks on Classical Cryptographic Protocols - (Invited Talk).,10.1007/978-3-642-20728-0_16
+Perfectly Secure Oblivious RAM without Random Oracles.,10.1007/978-3-642-19571-6_10
+A generalization of Paillier&apos;s public-key system with applications to electronic voting.,10.1007/S10207-010-0119-9
+Multiparty Computation for Dishonest Majority - From Passive to Active Security at Low Cost.,10.1007/978-3-642-14623-7_30
+Perfectly Secure Multiparty Computation and the Computational Overhead of Cryptography.,10.1007/978-3-642-13190-5_23
+Secure Multiparty AES.,10.1007/978-3-642-14577-3_31
+Threshold Decryption and Zero-Knowledge Proofs for Lattice-Based Cryptosystems.,10.1007/978-3-642-11799-2_13
+From Passive to Covert Security at Low Cost.,10.1007/978-3-642-11799-2_9
+Efficient, Robust and Constant-Round Distributed RSA Key Generation.,10.1007/978-3-642-11799-2_12
+On the Necessary and Sufficient Assumptions for UC Computation.,10.1007/978-3-642-11799-2_8
+A correction to &apos;efficient and secure comparison for on-line auctions&apos;.,10.1504/IJACT.2009.028031
+Quantum-Secure Coin-Flipping and Applications.,10.1007/978-3-642-10366-7_4
+On the Amortized Complexity of Zero-Knowledge Protocols.,10.1007/978-3-642-03356-8_11
+Improving the Security of Quantum Protocols via Commit-and-Open.,10.1007/978-3-642-03356-8_24
+Secure Multiparty Computation Goes Live.,10.1007/978-3-642-03549-4_20
+Using Compilers to Enhance Cryptographic Product Development.,10.1007/978-3-8348-9363-5_29
+Asynchronous Multiparty Computation - Theory and Implementation.,10.1007/978-3-642-00468-1_10
+On the Theory and Practice of Personal Digital Signatures.,10.1007/978-3-642-00468-1_16
+Universally Composable Multiparty Computation with Partially Isolated Parties.,10.1007/978-3-642-00457-5_19
+Homomorphic encryption and secure comparison.,10.1504/IJACT.2008.017048
+Cryptography in the Bounded-Quantum-Storage Model.,10.1137/060651343
+Dakota- Hashing from a Combination of Modular Arithmetic and Symmetric Cryptography.,10.1007/978-3-540-68914-0_9
+Scalable Multiparty Computation with Nearly Optimal Work and Resilience.,10.1007/978-3-540-85174-5_14
+Public-Key Encryption with Non-interactive Opening.,10.1007/978-3-540-79263-5_15
+RFID Security - Tradeoffs between Security and Efficiency.,10.1007/978-3-540-79263-5_20
+Isolated Proofs of Knowledge and Isolated Zero Knowledge.,10.1007/978-3-540-78967-3_29
+Essentially Optimal Universally Composable Oblivious Transfer.,10.1007/978-3-642-00730-9_20
+Automata, Languages and Programming, 35th International Colloquium, ICALP 2008, Reykjavik, Iceland, July 7-11, 2008, Proceedings, Part I - Tack A - Algorithms, Automata, Complexity, and Games,10.1007/978-3-540-70575-8
+Automata, Languages and Programming, 35th International Colloquium, ICALP 2008, Reykjavik, Iceland, July 7-11, 2008, Proceedings, Part II - Track B - Logic, Semantics, and Theory of Programming &amp; Track C - Security and Cryptography Foundations,10.1007/978-3-540-70583-3
+Efficient and Secure Comparison for On-Line Auctions.,10.1007/978-3-540-73458-1_30
+Secure Protocols with Asymmetric Trust.,10.1007/978-3-540-76900-2_22
+A Tight High-Order Entropic Quantum Uncertainty Relation with Applications.,10.1007/978-3-540-74143-5_20
+Secure Identification and QKD in the Bounded-Quantum-Storage Model.,10.1007/978-3-540-74143-5_19
+Scalable and Unconditionally Secure Multiparty Computation.,10.1007/978-3-540-74143-5_32
+Atomic Secure Multi-party Multiplication with Low Communication.,10.1007/978-3-540-72540-4_19
+Non-interactive Proofs for Integer Multiplication.,10.1007/978-3-540-72540-4_24
+A &quot;proof-reading&quot; of Some Issues in Cryptography.,10.1007/978-3-540-73420-8_2
+An Extended Quadratic Frobenius Primality Test with Average- and Worst-Case Error Estimate.,10.1007/S00145-006-0332-X
+Oblivious Transfer and Linear Functions.,10.1007/11818175_26
+Scalable Secure Multiparty Computation.,10.1007/11818175_30
+Simplified Threshold RSA with Adaptive and Proactive Security.,10.1007/11761679_35
+Unclonable Group Identification.,10.1007/11761679_33
+A Practical Implementation of Secure Auctions Based on Multiparty Integer Computation.,10.1007/11889663_10
+Linear Integer Secret Sharing and Distributed Exponentiation.,10.1007/11745853_6
+Theory and Practice of Multiparty Computation.,10.1007/11832072_25
+Unconditionally Secure Constant-Rounds Multi-party Computation for Equality, Comparison, Bits and Exponentiation.,10.1007/11681878_15
+Non-interactive Zero-Knowledge from Homomorphic Encryption.,10.1007/11681878_3
+Efficient algorithms for the gcd and cubic residuosity in the ring of Eisenstein integers.,10.1016/J.JSC.2004.02.006
+Constant-Round Multiparty Computation Using a Black-Box Pseudorandom Generator.,10.1007/11535218_23
+A Quantum Cipher with Near Optimal Key-Recycling.,10.1007/11535218_30
+Cryptography In the Bounded Quantum-Storage Model.,10.1109/SFCS.2005.30
+Cryptography in the bounded quantum-storage model.,10.1109/ITWTPI.2005.1543950
+Efficient Threshold RSA Signatures with General Moduli and No Extra Assumptions.,10.1007/978-3-540-30580-4_24
+Share Conversion, Pseudorandom Secret-Sharing and Applications to Secure Computation.,10.1007/978-3-540-30576-7_19
+Adaptive versus Non-Adaptive Security of Multi-Party Protocols.,10.1007/S00145-004-0135-X
+Zero-Knowledge Proofs and String Commitments Withstanding Quantum Attacks.,10.1007/978-3-540-28628-8_16
+On the Key-Uncertainty of Quantum Ciphers and the Computational Security of One-Way Quantum Transmission.,10.1007/978-3-540-24676-3_6
+Secret-Key Zero-Knowlegde and Non-interactive Verifiable Exponentiation.,10.1007/978-3-540-24638-1_13
+Unfair Noisy Channels and Oblivious Transfer.,10.1007/978-3-540-24638-1_20
+A Length-Flexible Threshold Cryptosystem with Applications.,10.1007/3-540-45067-X_30
+Universally Composable Efficient Multiparty Computation from Threshold Homomorphic Encryption.,10.1007/978-3-540-45146-4_15
+Efficient Algorithms for GCD and Cubic Residuosity in the Ring of Eisenstein Integers.,10.1007/978-3-540-45077-1_11
+An Extended Quadratic Frobenius Primality Test with Average and Worst Case Error Estimates.,10.1007/978-3-540-45077-1_12
+Non-interactive and reusable non-malleable commitment schemes.,10.1145/780542.780605
+The Theory and Implementation of an Electronic Voting System.,10.1007/978-1-4615-0239-5_6
+A Statistically-Hiding Integer Commitment Scheme Based on Groups with Hidden Order.,10.1007/3-540-36178-2_8
+Expanding Pseudorandom Functions; or - From Known-Plaintext Security to Chosen-Plaintext Security.,10.1007/3-540-45708-9_29
+Perfect Hiding and Perfect Binding Universally Composable Commitment Schemes with Constant Expansion Factor.,10.1007/3-540-45708-9_37
+Generic Lower Bounds for Root Extraction and Signature Schemes in General Groups.,10.1007/3-540-46035-7_17
+Client/Server Tradeoffs for Online Elections.,10.1007/3-540-45664-3_9
+Secure Distributed Linear Algebra in a Constant Number of Rounds.,10.1007/3-540-44647-8_7
+On the Cost of Reconstructing a Secret, or VSS with Optimal Reconstruction Phase.,10.1007/3-540-44647-8_30
+On Adaptive vs. Non-adaptive Security of Multiparty Protocols.,10.1007/3-540-44987-6_17
+Multiparty Computation from Threshold Homomorphic Encryption.,10.1007/3-540-44987-6_18
+Practical Threshold RSA Signatures without a Trusted Dealer.,10.1007/3-540-44987-6_10
+A Generalisation, a Simplification and Some Applications of Paillier&apos;s Probabilistic Public-Key System.,10.1007/3-540-44586-2_9
+Short Non-Interactive Cryptographic Proofs.,10.1007/S001450010011
+Verifiable Encryption, Group Encryption, and Their Applications to Separable Group Signatures and Signature Sharing Schemes.,10.1007/3-540-44448-3_25
+Improved Non-committing Encryption Schemes Based on a General Complexity Assumption.,10.1007/3-540-44598-6_27
+General Secure Multi-party Computation from any Linear Secret-Sharing Scheme.,10.1007/3-540-45539-6_22
+Efficient Concurrent Zero-Knowledge in the Auxiliary String Model.,10.1007/3-540-45539-6_30
+Efficient Zero-Knowledge Proofs of Knowledge Without Intractability Assumptions.,10.1007/978-3-540-46588-1_24
+On the complexity of verifiable secret sharing and multiparty computation.,10.1145/335305.335343
+Efficient Multiparty Computations Secure Against an Adaptive Adversary.,10.1007/3-540-48910-X_22
+On the (Im)possibility of Basing Oblivious Transfer and Bit Commitment on Weakened Security Assumptions.,10.1007/3-540-48910-X_5
+Lectures on Data Security, Modern Cryptology in Theory and Practice, Summer School, Aarhus, Denmark, July 1998,10.1007/3-540-48969-X
+Zero-Knowledge Authentication Scheme with Secret Key Exchange.,10.1007/S001459900041
+Two-Key Triple Encryption.,10.1007/S001459900044
+Statistical Secrecy and Multibit Commitments.,10.1109/18.669255
+Commitment Schemes and Zero-Knowledge Protocols.,10.1007/3-540-48969-X_3
+Zero-Knowledge Proofs for Finite Field Arithmetic; or - Can Zero-Knowledge be for Free?,10.1007/BFB0055745
+Sequential Iteration of Interactive Arguments and an Efficient Zero-Knowledge Argument for NP.,10.1007/BFB0055101
+On the Existence of Statistically Hiding Bit Commitment Schemes and Fail-Stop Signatures.,10.1007/S001459900026
+Fast and Secure Immunization Against Adaptive Man-in-the-Middle Impersonation.,10.1007/3-540-69053-0_7
+Linear Zero-Knowledge - A Note on Efficient Zero-Knowledge Proofs and Arguments.,10.1145/258533.258635
+New Generation of Secure and Practical RSA-Based Signatures.,10.1007/3-540-68697-5_14
+New Convertible Undeniable Signature Schemes.,10.1007/3-540-68339-9_32
+Efficient and Provable Security Amplifications.,10.1007/3-540-62494-5_9
+Practical and Provably Secure Release of a Secret and Exchange of Signatures.,10.1007/BF00191356
+Multiple Encryption with Minimum Key.,10.1007/BFB0032355
+Secure Signature Schemes based on Interactive Protocols.,10.1007/3-540-44750-4_24
+Honest Verifier vs Dishonest Verifier in Public Coin Zero-Knowledge Proofs.,10.1007/3-540-44750-4_26
+Proofs of Partial Knowledge and Simplified Design of Witness Hiding Protocols.,10.1007/3-540-48658-5_19
+Parallel Divertibility of Proofs of Knowledge (Extended Abstract).,10.1007/BFB0053431
+Interactive Hashing can Simplify Zero-Knowledge Protocol Design Without Computational Assumptions (Extended Abstract).,10.1007/3-540-48329-2_9
+On the Existence of Statistically Hiding Bit Commitment Schemes and Fail-Stop Signatures.,10.1007/3-540-48329-2_22
+Practical and Provably Secure Release of a Secret and Exchange of Signatures.,10.1007/3-540-48285-7_17
+The Breaking of the AR Hash Function.,10.1007/3-540-48285-7_25
+On Generation of Probable Primes By Incremental Search.,10.1007/3-540-48071-4_26
+Security Bounds for Parallel Versions of Identification Protocols (Extended Abstract).,10.1007/3-540-47555-9_40
+Non-Interactive Circuit Based Proofs and Non-Interactive Perfect Zero-knowledge with Proprocessing.,10.1007/3-540-47555-9_28
+Speeding up Prime Number Generation.,10.1007/3-540-57332-1_37
+Towards Practical Public Key Systems Secure Against Chosen Ciphertext Attacks.,10.1007/3-540-46766-1_36
+Advances in Cryptology - EUROCRYPT &apos;90, Workshop on the Theory and Application of of Cryptographic Techniques, Aarhus, Denmark, May 21-24, 1990, Proceedings,10.1007/3-540-46877-3
+Convertible Undeniable Signatures.,10.1007/3-540-38424-3_14
+On the Existence of Bit Commitment Schemes and Zero-Knowledge Proofs.,10.1007/0-387-34805-0_3
+A Design Principle for Hash Functions.,10.1007/0-387-34805-0_39
+Zero-Knowledge Authentication Scheme with Secret Key Exchange (Extended Abstract).,10.1007/0-387-34799-2_43
+&quot;Practical IP&quot; &lt;= MA.,10.1007/0-387-34799-2_42
+On the Randomness of Legendre and Jacobi Sequences.,10.1007/0-387-34799-2_13
+Payment Systems and Credential Mechanisms with Provable Security Against Abuse by Individuals.,10.1007/0-387-34799-2_26
+Anonymous and Verifiable Registration in Databases.,10.1007/3-540-45961-8_14
+Multiparty Unconditionally Secure Protocols (Extended Abstract),10.1145/62212.62214
+Concatenated group codes and their exponents.,10.1109/TIT.1987.1057375
+Gradual and Verifiable Release of a Secret.,10.1007/3-540-48184-2_11
+Multiparty Unconditionally Secure Protocols (Abstract).,10.1007/3-540-48184-2_43
+Multiparty Computations Ensuring Privacy of Each Party&apos;s Input and Correctness of the Result.,10.1007/3-540-48184-2_7
+Collision Free Hash Functions and Public Key Signature Schemes.,10.1007/3-540-39118-5_19
