@@ -1,8 +1,13 @@
 # DATA WIZARDIALISATION
 
-Du skal lave en mappe "files"
-I den skal du lave en mappe der hedder "DavideMottin"
-Du skal lave "pip3 install scholarly". Du skal køre det med "python3 download.py &". Så vil den kører det i baggrunden. Tjek jævnligt "scholar.log".
+# Vores første mål
+Vi skal nå at starte på at lave noget der virker, som vi kan bygge på. 
+
+- [ ] Sætte en HTML/Javascript side op, som vi kan bygge på
+- [ ] Lav simpel visualisering (måske bare statisk)
+- [ ] Prøv simpelt at indrage noget data, bare vilkårligt
+
+DEADLINE:
+Mandag d. 2/11/2020
 
 
-Hallo de er mig farmand test 123 goblgobl
