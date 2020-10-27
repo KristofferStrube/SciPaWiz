@@ -70,28 +70,36 @@ g.graph().align = 'DR';
 
 data = data.filter(paper => paper.Citers != null)
 
-// States and transitions from RFC 793
-var states = data.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
+var nodes = data.reduce((dict, paper) => {
+   dict[paper.Doi] = {};
+   dict[paper.Doi].description = paper.Title;
+   return dict;
+   }, {});
 
-console.log(states);
-
-// Add states to the graph, set labels, and style
-Object.keys(states).forEach(function(state) {
-  var value = states[state];
+// Add nodes to the graph, set labels, and style
+Object.keys(nodes).forEach(function(node) {
+  var value = nodes[node];
   value.label = " ";
   value.rx = value.ry = 10;
   value.shape = "circle"
   value.style = "fill: #a57"
-  g.setNode(state, value);
+  g.setNode(node, value);
 });
 
-var options = {};
-data.filter(paper => paper.Citers != null).forEach(paper => {
-    paper.Citers.filter(c => states[c] != null).forEach(citer => {
-        g.setEdge(paper.Doi, citer, {curve: d3.curveBasis});
+var edges = [];
+
+data.forEach(paper => {
+    paper.Citers.filter(c => nodes[c] != null).forEach(citer => {
+        edges.push({from: paper.Doi, to: citer});
     });
 });
 
+
+var root = data[0].Doi
+
+edges.forEach(edge => {
+   g.setEdge(edge.from, edge.to, {curve: d3.curveBasis});
+});
 
 // Create the renderer
 var render = new dagreD3.render();
