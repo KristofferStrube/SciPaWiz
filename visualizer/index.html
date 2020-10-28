@@ -12,6 +12,7 @@
 <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="tipsy.js"></script>
 <script src="data.js"></script>
+<script src="jsnetworkx.js"></script>
 
 <h1>Dagre D3 Demo: Tooltip on Hover</h1>
 
@@ -62,35 +63,8 @@ for the tooltip.
 
 <script id="js">
 // Create a new directed graph
-var g = new dagreD3.graphlib.Graph().setGraph({});
+var g = nxclean()
 
-g.graph().rankdir = 'LR';
-g.graph().align = 'DR';
-//g.graph().ranker = 'tight-tree'
-
-data = data.filter(paper => paper.Citers != null)
-
-// States and transitions from RFC 793
-var states = data.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
-
-console.log(states);
-
-// Add states to the graph, set labels, and style
-Object.keys(states).forEach(function(state) {
-  var value = states[state];
-  value.label = " ";
-  value.rx = value.ry = 10;
-  value.shape = "circle"
-  value.style = "fill: #a57"
-  g.setNode(state, value);
-});
-
-var options = {};
-data.filter(paper => paper.Citers != null).forEach(paper => {
-    paper.Citers.filter(c => states[c] != null).forEach(citer => {
-        g.setEdge(paper.Doi, citer, {curve: d3.curveBasis});
-    });
-});
 
 
 // Create the renderer
@@ -111,6 +85,144 @@ svg.call(zoom);
 var styleTooltip = function(name, description) {
   return "<p class='name'>" + name + "</p><p class='description'>" + description + "</p>";
 };
+
+
+
+
+
+/*returns a graph constructed directly from the datafile*/
+function load_graph() {
+  var g = new dagreD3.graphlib.Graph().setGraph({});
+
+  g.graph().rankdir = 'LR';
+  g.graph().align = 'DR';
+  //g.graph().ranker = 'tight-tree'
+
+  data = data.filter(paper => paper.Citers != null)
+
+  // States and transitions from RFC 793
+  var states = data.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
+
+  //console.log(states);
+
+  // Add states to the graph, set labels, and style
+  Object.keys(states).forEach(function(state) {
+    var value = states[state];
+    value.label = " ";
+    value.rx = value.ry = 10;
+    value.shape = "circle"
+    value.style = "fill: #a57"
+    g.setNode(state, value);
+  });
+
+  var options = {};
+  data.filter(paper => paper.Citers != null).forEach(paper => {
+      paper.Citers.filter(c => states[c] != null).forEach(citer => {
+          g.setEdge(paper.Doi, citer, {curve: d3.curveBasis});
+      });
+  });
+
+  return g
+}
+
+/*Returns a cleaned graph based on cliques*/
+function nxclean() {
+  data = data.filter(paper => paper.Citers != null)
+
+  // States and transitions from RFC 793
+  var states = data.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
+
+
+  //Make networkx version of the graph
+  gx = new jsnx.DiGraph();
+
+  //Add real data for the graph
+  Object.keys(states).forEach(function(state) {
+    gx.addNode(state);
+  });
+
+  data.filter(paper => paper.Citers != null).forEach(paper => {
+      paper.Citers.filter(c => states[c] != null).forEach(citer => {
+          if (paper.Doi != citer) {
+            gx.addEdge(paper.Doi, citer);
+          } 
+      });
+  });
+
+  //Rank nodes for later MUST BE DONE HERE DO NOT MOVE DOWN
+  var scource_node = Array.from(gx.inDegreeIter()).filter(el => el[1] == 0)[0][0]
+  var sortOrder = jsnx.topologicalSort(gx)
+
+  //Add reverse edges
+  data.filter(paper => paper.Citers != null).forEach(paper => {
+      paper.Citers.filter(c => states[c] != null).forEach(citer => {
+        gx.addEdge(citer, paper.Doi); 
+      });
+  });  
+  
+
+  var cliques_iterator = jsnx.findCliques(gx)
+
+  var cliques = Array.from(cliques_iterator)
+
+  //Sort cliques according to topology order
+  const sorter = (a, b) => {
+    ia = sortOrder.indexOf(a);
+    ib = sortOrder.indexOf(b); 
+    if ( ia < ib ) {
+        return -1;
+    };
+    if (ia > ib ) {
+      return 1;
+    }
+    return 0;
+  };
+
+  cliques.forEach(clique => {clique.sort(sorter)})
+
+
+  //Make the actual graph based on cliques
+  var g = new dagreD3.graphlib.Graph().setGraph({});
+
+  g.graph().rankdir = 'LR';
+  g.graph().align = 'DR';
+  
+  //Node can be loaded from data
+  Object.keys(states).forEach(function(state) {
+    var value = states[state];
+    value.label = " ";
+    value.rx = value.ry = 10;
+    value.shape = "circle"
+    value.style = "fill: #a57"
+    g.setNode(state, value);
+  });
+
+  cliques.forEach(clique => {
+    var color = getRandomColor() 
+    clique.forEach((node, index) => {    
+      if ((index + 1) != (clique.length)) {
+        if (clique.length == 2) {
+          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;"})
+        } else {
+          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke: "+color+";", arrowheadStyle: "fill: "+color})  
+        }
+      }
+    })
+  })
+
+  return g
+
+}
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 
 // Run the renderer. This is what draws the final graph.
 render(inner, g);
