@@ -218,7 +218,6 @@ function nxclean() {
   var sortOrder = jsnx.topologicalSort(gx)
   
   //Add reverse edges
-  console.log(jsnx.edges(gx))
   gx.edges().forEach(edge =>
     gx.addEdge(edge[1],edge[0])
   )
@@ -288,8 +287,7 @@ function nxclean() {
     }
     return 0;
   }
-  
-  console.log(cliques.sort(compareLength).reverse()[0].length)
+
   g.setNode("mainGroup", {style: `fill: white`})
   cliques.sort(compareLength).reverse()[0].forEach((node, index) => {
     g.setParent(node, "mainGroup");
