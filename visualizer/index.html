@@ -230,7 +230,7 @@ function nxclean() {
 
 
   //Make the actual graph based on cliques
-  var g = new dagreD3.graphlib.Graph().setGraph({});
+  var g = new dagreD3.graphlib.Graph({compound:true}).setGraph({});
 
   g.graph().rankdir = 'LR';
   g.graph().align = 'DR';
@@ -246,17 +246,33 @@ function nxclean() {
   });
 
   cliques.forEach(clique => {
-    var color = getRandomColor() 
-    clique.forEach((node, index) => {    
+    var color = getRandomColor()
+    clique.forEach((node, index) => {   
       if ((index + 1) != (clique.length)) {
         if (clique.length == 2) {
           g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;"})
         } else {
-          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke: "+color+"; stroke-width: 3;", arrowheadStyle: "fill: "+color})  
+          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: `stroke: ${color}; stroke-width: 3;`, arrowheadStyle: `fill: ${color}`})  
         }
       }
     })
   })
+
+  function compareLength(a, b) {
+    if ( a.length < b.length ){
+      return -1;
+    }
+    if ( a.length > b.length ){
+      return 1;
+    }
+    return 0;
+  }
+  
+  console.log(cliques.sort(compareLength).reverse()[0].length)
+  g.setNode("mainGroup", {style: `fill: white`})
+  cliques.sort(compareLength).reverse()[0].forEach((node, index) => {
+    g.setParent(node, "mainGroup");
+  });
 
   return g
 
