@@ -24,6 +24,7 @@ function GetPapersFromAuthor(author, selectElement) {
                 return option
             });
             options = options.uniqueText();
+            selectElement.innerHTML = ''
             options.forEach(option => {
                 selectElement.appendChild(option)
             });

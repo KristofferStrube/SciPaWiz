@@ -109,9 +109,11 @@ removeDeadEndsButtonElement.addEventListener("click", () => {
 function infoCallback(doi, title) {
   if (!data.map(p => p.Doi).includes(doi)) {
     data.push({Doi: doi, Title: title, Citers: null})
-    g = nxclean()
-    render(inner, g);
+  } else {
+    data.filter(p => p.Doi == doi)[0].Title = title
   }
+  g = nxclean()
+  render(inner, g);
 }
 
 function citersCallback(doi, citers) {
