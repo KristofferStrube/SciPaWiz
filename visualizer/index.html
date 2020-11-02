@@ -65,7 +65,11 @@ text {
 <button id="selectPaperButton">
   Select Paper
 </button>
-<br /><br />
+<br />
+<button id="deadEndsButton">
+  Remove Dead Ends
+</button>
+<br />
 <span id="count"></span>/<span id="total"></span>
 
 <svg width=960 height=600></svg>
@@ -86,13 +90,16 @@ var layersElement = document.getElementById('layers')
 var authorButtonElement = document.getElementById('authorButton');
 authorButtonElement.addEventListener("click", () => GetPapersFromAuthor(authorElement.value, selectPaperElement));
 
+var deadEndsButtonElement = document.getElementById('deadEndsButton');
+deadEndsButtonElement.addEventListener("click", () => updateGraphCallback());
+
 var selectPaperButtonElement = document.getElementById('selectPaperButton');
 selectPaperButtonElement.addEventListener("click", () => {
   data = [];
-  count = 0;
-  total = 1;
-  document.getElementById('count').innerHTML = count;
-  document.getElementById('total').innerHTML = total;
+  count = new Set([]);
+  total = new Set([selectPaperElement.value]);
+  document.getElementById('count').innerHTML = count.size;
+  document.getElementById('total').innerHTML = total.size;
   svg.innerHtml = '';
   LoadPaper(selectPaperElement.value, layersElement.value, infoCallback, citersCallback, updateGraphCallback);
 });
@@ -105,6 +112,8 @@ render(inner, g);
 
 function updateGraphCallback() {
   data = data.filter(paper => paper.Citers != null);
+  data = data.filter(paper => paper.Citers.length != 0);
+  console.log("We purched the data!")
   g = nxclean();
   render(inner, g);
   inner.selectAll("g.node")
@@ -118,8 +127,6 @@ function infoCallback(doi, title) {
   } else {
     data.filter(p => p.Doi == doi)[0].Title = title
   }
-  g = nxclean()
-  render(inner, g);
 }
 
 function citersCallback(doi, citers) {
@@ -128,6 +135,11 @@ function citersCallback(doi, citers) {
   } else {
     data.filter(p => p.Doi == doi)[0].Citers = citers
   }
+  g = nxclean()
+  render(inner, g);
+  inner.selectAll("g.node")
+    .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
+    .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
 }
 
 
