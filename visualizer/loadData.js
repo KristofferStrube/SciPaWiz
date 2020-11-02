@@ -1,5 +1,8 @@
 var proxy = "" //"https://cors-anywhere.herokuapp.com/";
 
+var count;
+var total;
+
 Array.prototype.uniqueText = function() {
     var arr = [];
     for (var i = 0; i < this.length; i++) {
@@ -24,6 +27,7 @@ function GetPapersFromAuthor(author, selectElement) {
                 return option
             });
             options = options.uniqueText();
+            selectElement.innerHTML = ''
             options.forEach(option => {
                 selectElement.appendChild(option)
             });
@@ -33,20 +37,7 @@ function GetPapersFromAuthor(author, selectElement) {
     xhttp.send();
 }
 
-function LoadPaper(doi, layers, infoCallback, citersCallback) {
-    var paperInfo = new XMLHttpRequest();
-    paperInfo.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            // Typical action to be performed when the document is ready:
-            var respons = JSON.parse(paperInfo.responseText);
-            if (!Array.isArray(respons)) return;
-            if (respons.length == 0) return;
-            infoCallback(doi, respons[0].title)
-        }
-    };
-    paperInfo.open("GET", proxy + `https://opencitations.net/index/api/v1/metadata/${doi}`, true);
-    paperInfo.send();
-
+function LoadPaper(doi, layers, infoCallback, citersCallback, updateGraphCallback) {
     if (layers != 0) {
         var citersInfo = new XMLHttpRequest();
         citersInfo.onreadystatechange = function() {
@@ -55,10 +46,30 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                 var respons = JSON.parse(citersInfo.responseText)
                 var citers = respons.map(p => p.citing.substring(8, p.citing.length));
                 citersCallback(doi, citers)
-                citers.forEach(c => LoadPaper(c, layers - 1, infoCallback, citersCallback))
+                total += citers.length
+                document.getElementById('total').innerHTML = total;
+                citers.forEach(c => LoadPaper(c, layers - 1, infoCallback, citersCallback, updateGraphCallback))
             }
         };
         citersInfo.open("GET", proxy + `https://opencitations.net/index/api/v1/citations/${doi}`, true);
         citersInfo.send();
     }
+
+    var paperInfo = new XMLHttpRequest();
+    paperInfo.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Typical action to be performed when the document is ready:
+            var respons = JSON.parse(paperInfo.responseText);
+            if (!Array.isArray(respons)) return;
+            if (respons.length == 0) return;
+            infoCallback(doi, respons[0].title)
+            count++;
+            document.getElementById('count').innerHTML = count;
+            if (count == total) {
+                updateGraphCallback();
+            }
+        }
+    };
+    paperInfo.open("GET", proxy + `https://opencitations.net/index/api/v1/metadata/${doi}`, true);
+    paperInfo.send();
 }

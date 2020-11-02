@@ -65,11 +65,8 @@ text {
 <button id="selectPaperButton">
   Select Paper
 </button>
-<br />
-<button id="removeDeadEndsButton">
-Remove Dead Ends
-</button>
 <br /><br />
+<span id="count"></span>/<span id="total"></span>
 
 <svg width=960 height=600></svg>
 
@@ -91,7 +88,14 @@ authorButtonElement.addEventListener("click", () => GetPapersFromAuthor(authorEl
 
 var selectPaperButtonElement = document.getElementById('selectPaperButton');
 selectPaperButtonElement.addEventListener("click", () => {
-  data = []; LoadPaper(selectPaperElement.value, layersElement.value, infoCallback, citersCallback);});
+  data = [];
+  count = 0;
+  total = 1;
+  document.getElementById('count').innerHTML = count;
+  document.getElementById('total').innerHTML = total;
+  svg.innerHtml = '';
+  LoadPaper(selectPaperElement.value, layersElement.value, infoCallback, citersCallback, updateGraphCallback);
+});
 
 // Create a new directed graph
 var g = nxclean()
@@ -99,19 +103,23 @@ var g = nxclean()
 // Run the renderer. This is what draws the final graph.
 render(inner, g);
 
-var removeDeadEndsButtonElement = document.getElementById('removeDeadEndsButton');
-removeDeadEndsButtonElement.addEventListener("click", () => {
+function updateGraphCallback() {
   data = data.filter(paper => paper.Citers != null);
   g = nxclean();
   render(inner, g);
-});
+  inner.selectAll("g.node")
+    .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
+    .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
+}
 
 function infoCallback(doi, title) {
   if (!data.map(p => p.Doi).includes(doi)) {
     data.push({Doi: doi, Title: title, Citers: null})
-    g = nxclean()
-    render(inner, g);
+  } else {
+    data.filter(p => p.Doi == doi)[0].Title = title
   }
+  g = nxclean()
+  render(inner, g);
 }
 
 function citersCallback(doi, citers) {
@@ -132,7 +140,7 @@ svg.call(zoom);
 
 // Simple function to style the tooltip for the given node.
 var styleTooltip = function(name, description) {
-  return "<p class='name'>" + name + "</p><p class='description'>" + description + "</p>";
+  return "<p class='name'>" + description + "</p><p class='description'>" + name + "</p>";
 };
 
 
@@ -243,7 +251,7 @@ function nxclean() {
 
 
   //Make the actual graph based on cliques
-  var g = new dagreD3.graphlib.Graph().setGraph({});
+  var g = new dagreD3.graphlib.Graph({compound:true}).setGraph({});
 
   g.graph().rankdir = 'LR';
   g.graph().align = 'DR';
@@ -259,17 +267,33 @@ function nxclean() {
   });
 
   cliques.forEach(clique => {
-    var color = getRandomColor() 
-    clique.forEach((node, index) => {    
+    var color = getRandomColor()
+    clique.forEach((node, index) => {   
       if ((index + 1) != (clique.length)) {
         if (clique.length == 2) {
           g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;"})
         } else {
-          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke: "+color+"; stroke-width: 3;", arrowheadStyle: "fill: "+color})  
+          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: `stroke: ${color}; stroke-width: 3;`, arrowheadStyle: `fill: ${color}`})  
         }
       }
     })
   })
+
+  function compareLength(a, b) {
+    if ( a.length < b.length ){
+      return -1;
+    }
+    if ( a.length > b.length ){
+      return 1;
+    }
+    return 0;
+  }
+  
+  console.log(cliques.sort(compareLength).reverse()[0].length)
+  g.setNode("mainGroup", {style: `fill: white`})
+  cliques.sort(compareLength).reverse()[0].forEach((node, index) => {
+    g.setParent(node, "mainGroup");
+  });
 
   return g
 
