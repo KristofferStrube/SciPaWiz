@@ -112,7 +112,6 @@ render(inner, g);
 
 function updateGraphCallback() {
   data = data.filter(paper => paper.Citers != null);
-  data = data.filter(paper => paper.Citers.length != 0);
   console.log("We purched the data!")
   g = nxclean();
   render(inner, g);
