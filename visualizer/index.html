@@ -66,16 +66,17 @@ text {
   Select Paper
 </button>
 <br />
-<button id="deadEndsButton">
-  Remove Dead Ends
-</button>
-<br />
 <span id="count"></span>/<span id="total"></span>
 
 <svg width=960 height=600></svg>
 
 <script>
-data = data.filter(paper => paper.Citers != null)
+var ExclusionSet = new Set();
+
+var pressedKeys = {};
+window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
+window.onkeydown = function(e) { pressedKeys[e.keyCode] = true; }
+
 // Create the renderer
 var render = new dagreD3.render();
 
@@ -90,35 +91,25 @@ var layersElement = document.getElementById('layers')
 var authorButtonElement = document.getElementById('authorButton');
 authorButtonElement.addEventListener("click", () => GetPapersFromAuthor(authorElement.value, selectPaperElement));
 
-var deadEndsButtonElement = document.getElementById('deadEndsButton');
-deadEndsButtonElement.addEventListener("click", () => updateGraphCallback());
-
 var selectPaperButtonElement = document.getElementById('selectPaperButton');
-selectPaperButtonElement.addEventListener("click", () => {
+selectPaperButtonElement.addEventListener("click", () => newGraph(selectPaperElement.value));
+
+function newGraph(id) {
   data = [];
+  ExclusionSet = new Set();
   count = new Set([]);
-  total = new Set([selectPaperElement.value]);
+  total = new Set([id]);
   document.getElementById('count').innerHTML = count.size;
   document.getElementById('total').innerHTML = total.size;
-  svg.innerHtml = '';
-  LoadPaper(selectPaperElement.value, layersElement.value, infoCallback, citersCallback, updateGraphCallback);
-});
+  LoadPaper(id, layersElement.value, infoCallback, citersCallback);
+}
 
 // Create a new directed graph
 var g = nxclean()
 
 // Run the renderer. This is what draws the final graph.
 render(inner, g);
-
-function updateGraphCallback() {
-  data = data.filter(paper => paper.Citers != null);
-  console.log("We purched the data!")
-  g = nxclean();
-  render(inner, g);
-  inner.selectAll("g.node")
-    .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
-    .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
-}
+inner.selectAll("g.node").on("click", (id) => extendGraph(id));
 
 function infoCallback(doi, title) {
   if (!data.map(p => p.Doi).includes(doi)) {
@@ -138,9 +129,20 @@ function citersCallback(doi, citers) {
   render(inner, g);
   inner.selectAll("g.node")
     .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
-    .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
+    .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); })
+    .on("click", (id) => extendGraph(id))
 }
 
+function extendGraph(doi) {
+  if (pressedKeys[17]) {
+    newGraph(doi);
+  } else {
+    total.add(doi);
+    ExclusionSet.add(doi)
+    document.getElementById('total').innerHTML = total.size;
+    LoadPaper(doi, 2, infoCallback, citersCallback);
+  }
+}
 
 // Set up zoom support
 var zoom = d3.zoom()
@@ -165,8 +167,10 @@ function load_graph() {
   g.graph().rankdir = 'LR';
   g.graph().align = 'DR';
   //g.graph().ranker = 'tight-tree'
+
+  var cleanedData = data.filter(paper => paper.Citers != null)
   
-  var states = data.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
+  var states = cleanedData.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
 
   // Add states to the graph, set labels, and style
   Object.keys(states).forEach(function(state) {
@@ -174,12 +178,12 @@ function load_graph() {
     value.label = " ";
     value.rx = value.ry = 10;
     value.shape = "circle"
-    value.style = "fill: #a57"
+    value.style = "fill: #a57;"
     g.setNode(state, value);
   });
 
   var options = {};
-  data.filter(paper => paper.Citers != null).forEach(paper => {
+  cleanedData.filter(paper => paper.Citers != null).forEach(paper => {
       paper.Citers.filter(c => states[c] != null).forEach(citer => {
           g.setEdge(paper.Doi, citer, {curve: d3.curveBasis});
       });
@@ -196,8 +200,12 @@ function nxclean() {
 
   //Make networkx version of the graph
   gx = new jsnx.DiGraph();
+
+  var cleanedData = data.filter(paper => paper.Citers != null)
   
-  var states = data.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
+  var states = cleanedData.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; dict[paper.Doi].citerCount = (paper.Citers != null ? paper.Citers.length : 0); return dict}, {})
+
+  var max = cleanedData.map(p => p.Citers != null ? p.Citers.length : 0).reduce((prev, length) => Math.max(prev, length))
 
   //Add nodes directly from the data
   Object.keys(states).forEach(function(state) {
@@ -210,14 +218,6 @@ function nxclean() {
       gx.addEdge(edge['v'],edge['w'])
     //}
   });
-
-  /*data.filter(paper => paper.Citers != null).forEach(paper => {
-      paper.Citers.filter(c => states[c] != null).forEach(citer => {
-          if (paper.Doi != citer) {
-            gx.addEdge(paper.Doi, citer);
-          } 
-      });
-  });*/
 
   //Rank nodes for later MUST BE DONE HERE DO NOT MOVE DOWN
   var source_node = Array.from(gx.inDegreeIter()).filter(el => el[1] == 0)[0][0]
@@ -232,13 +232,6 @@ function nxclean() {
   gx.edges().forEach(edge =>
     gx.addEdge(edge[1],edge[0])
   )
-
-  /*data.filter(paper => paper.Citers != null).forEach(paper => {
-      paper.Citers.filter(c => states[c] != null).forEach(citer => {
-        gx.addEdge(citer, paper.Doi); 
-      });
-  });*/  
-  
 
   var cliques_iterator = jsnx.findCliques(gx)
 
@@ -265,14 +258,21 @@ function nxclean() {
 
   g.graph().rankdir = 'LR';
   g.graph().align = 'DR';
+
+  cliques.filter(c => c.length == 2).forEach(clique => {
+    var restOfNodes = cliques.filter(c => c != clique).flat();
+    if(!restOfNodes.includes(clique[1]) && !ExclusionSet.has(clique[0])) {
+      cliques.splice(cliques.indexOf(clique),1)
+      delete states[clique[1]];
+    }
+  });
   
   //Node can be loaded from data
   Object.keys(states).forEach(function(state) {
     var value = states[state];
-    value.label = " ";
-    value.rx = value.ry = 10;
+    value.label = value.citerCount;
     value.shape = "circle"
-    value.style = "fill: #a57"
+    value.style = `fill: #a57; r:${60*value.citerCount/max+20};`
     g.setNode(state, value);
   });
 
@@ -300,9 +300,11 @@ function nxclean() {
   }
 
   g.setNode("mainGroup", {style: `fill: white`})
-  cliques.sort(compareLength).reverse()[0].forEach((node, index) => {
-    g.setParent(node, "mainGroup");
-  });
+  if (cliques.length != 0) {
+    cliques.sort(compareLength).reverse()[0].forEach((node, index) => {
+      g.setParent(node, "mainGroup");
+    });
+  }
 
   return g
 

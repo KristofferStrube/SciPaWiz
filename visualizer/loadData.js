@@ -1,7 +1,7 @@
 var proxy = "" //"https://cors-anywhere.herokuapp.com/";
 
-var count;
-var total;
+var count = new Set();
+var total = new Set();
 
 var localStorage = window.localStorage;
 
@@ -52,7 +52,7 @@ function union(setA, setB) {
     return _union
 }
 
-function LoadPaper(doi, layers, infoCallback, citersCallback, updateGraphCallback) {
+function LoadPaper(doi, layers, infoCallback, citersCallback) {
     if (layers != 0) {
         var citersInfo = new XMLHttpRequest();
         citersInfo.onreadystatechange = function() {
@@ -64,7 +64,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback, updateGraphCallbac
                 if (layers - 1 != 0) {
                     total = union(total, citers);
                     document.getElementById('total').innerHTML = total.size;
-                    citers.forEach(c => LoadPaper(c, layers - 1, infoCallback, citersCallback, updateGraphCallback))
+                    citers.forEach(c => LoadPaper(c, layers - 1, infoCallback, citersCallback))
                 }
             }
         };
@@ -93,7 +93,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback, updateGraphCallbac
         function returnInfo(respons) {
             if (!Array.isArray(respons)) return;
             if (respons.length == 0) return;
-            infoCallback(doi, respons[0].title)
+            infoCallback(doi, respons[0].title + " : " + respons[0].author)
             count.add(doi)
             document.getElementById('count').innerHTML = count.size;
         }
