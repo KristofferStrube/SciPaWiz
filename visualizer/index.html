@@ -282,9 +282,9 @@ function nxclean() {
     clique.forEach((node, index) => {   
       if ((index + 1) != (clique.length)) {
         if (clique.length == 2) {
-          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;"})
+          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`})
         } else {
-          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: `stroke: ${color}; stroke-width: 3;`, arrowheadStyle: `fill: ${color}`})  
+          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`})  
         }
       }
     })

@@ -53,7 +53,7 @@ body {
   }
   
   .arrowhead {
-   stroke: blue;
-   fill: blue;
-   stroke-width: 1.5px;
+   stroke:transparent;
+   fill: none;
+   stroke-width: 0px;
   }
