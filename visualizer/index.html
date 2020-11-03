@@ -29,12 +29,6 @@ text {
   fill: #fff;
 }
 
-.edgePath path {
-  stroke: #333;
-  fill: #333;
-  stroke-width: 1.5px;
-}
-
 .node text {
   pointer-events: none;
 }
@@ -105,7 +99,7 @@ function newGraph(id) {
 }
 
 // Create a new directed graph
-var g = nxclean()
+var g = nxclean("10.1007/978-3-642-40450-4_63")
 
 // Run the renderer. This is what draws the final graph.
 render(inner, g);
@@ -125,7 +119,7 @@ function citersCallback(doi, citers) {
   } else {
     data.filter(p => p.Doi == doi)[0].Citers = citers
   }
-  g = nxclean()
+  g = nxclean(doi)
   render(inner, g);
   inner.selectAll("g.node")
     .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
@@ -193,7 +187,7 @@ function load_graph() {
 }
 
 /*Returns a cleaned graph based on cliques*/
-function nxclean() {
+function nxclean(doi) {
   //Load dagre graph
   var gd = load_graph()
 
@@ -220,7 +214,7 @@ function nxclean() {
   });
 
   //Rank nodes for later MUST BE DONE HERE DO NOT MOVE DOWN
-  var source_node = Array.from(gx.inDegreeIter()).filter(el => el[1] == 0)[0][0]
+  var source_node = doi
   var adjecencyMap = makeAdjecencyMap(gx)
 
   gx.nodes().forEach( node => findCycles(adjecencyMap, node, {}, node, gx))
