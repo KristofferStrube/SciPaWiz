@@ -60,11 +60,16 @@ text {
   Select Paper
 </button>
 <br />
+<button id="selectPaperButton">
+  Color
+</button>
 <span id="count"></span>/<span id="total"></span>
 
 <svg width=960 height=600></svg>
 
 <script>
+var edges = {}
+
 var ExclusionSet = new Set();
 
 var pressedKeys = {};
@@ -105,6 +110,21 @@ var g = nxclean("10.1007/978-3-642-40450-4_63")
 render(inner, g);
 inner.selectAll("g.node").on("click", (id) => extendGraph(id));
 
+updateEdges();
+
+function updateEdges() {
+  Object.keys(edges).filter(e => edges[e].length > 1).forEach(e => {
+    var d = inner.select("#" + e + " > path")._groups[0][0].getAttribute("d")
+    inner.select("#" + e).html("");
+    for (i = 0; i<edges[e].length; i++) {
+      inner.select("#" + e).append("path")
+        .attr("style", `stroke:${edges[e][i]};stroke-width:${edges[e].length*4};stroke-dasharray:4, ${4*(edges[e].length-1)};stroke-dashoffset:${4*i}`)
+        .attr("d", d)
+        .attr("class", "path")
+    }
+  });
+}
+
 function infoCallback(doi, title) {
   if (!data.map(p => p.Doi).includes(doi)) {
     data.push({Doi: doi, Title: title, Citers: null})
@@ -119,12 +139,15 @@ function citersCallback(doi, citers) {
   } else {
     data.filter(p => p.Doi == doi)[0].Citers = citers
   }
+  
+  edges = {}
   g = nxclean(doi)
   render(inner, g);
   inner.selectAll("g.node")
     .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
     .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); })
     .on("click", (id) => extendGraph(id))
+  updateEdges();
 }
 
 function extendGraph(doi) {
@@ -277,7 +300,13 @@ function nxclean(doi) {
         if (clique.length == 2) {
           g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`})
         } else {
-          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`})  
+          var id = "edge"+(node+clique[index+1]).replaceAll(".", "").replaceAll("/","");
+          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
+          if (edges.hasOwnProperty(id)) {
+            edges[id].push(color);
+          } else {
+            edges[id] = [color];
+          }
         }
       }
     })
