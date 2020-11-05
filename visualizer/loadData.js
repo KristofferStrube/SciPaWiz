@@ -60,16 +60,16 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
         citersInfo.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 if (cancelToken) { citersInfo.onreadystatechange = undefined; return; }
-                // Typical action to be performed when the document is ready:
-                var respons = JSON.parse(citersInfo.responseText)
+                var respons = JSON.parse(citersInfo.responseText);
                 var citers = respons.map(p => p.citing.substring(8, p.citing.length));
                 citersCallback(doi, citers)
                 if (layers - 1 != 0) {
                     total = union(total, citers);
                     document.getElementById('total').innerHTML = total.size;
                     citers.forEach(c => {
-                        if (cancelToken) { return; }
-                        LoadPaper(c, layers - 1, infoCallback, citersCallback);
+                        setTimeout(() => {
+                            LoadPaper(c, layers - 1, infoCallback, citersCallback);
+                        }, Math.floor(Math.random() * 100 * citers.length));
                     });
                 }
             }

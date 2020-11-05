@@ -201,7 +201,7 @@ function load_graph() {
     value.label = " ";
     value.rx = value.ry = 10;
     value.shape = "circle"
-    value.style = "fill: #a57;"
+    value.style = "fill:white; stroke:black; stroke-width:2;"
     g.setNode(state, value);
   });
 
@@ -294,8 +294,9 @@ function nxclean(doi) {
   Object.keys(states).forEach(function(state) {
     var value = states[state];
     value.label = value.citerCount;
+    value.rx = value.ry = 5;
     value.shape = "circle"
-    value.style = `fill: #a57; r:${60*value.citerCount/max+20};`
+    value.style = `fill:grey; stroke:black; stroke-width:2; r:${60*value.citerCount/max+20};`
     g.setNode(state, value);
   });
 
