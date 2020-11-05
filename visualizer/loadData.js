@@ -3,6 +3,8 @@ var proxy = "" //"https://cors-anywhere.herokuapp.com/";
 var count = new Set();
 var total = new Set();
 
+var cancelToken = false;
+
 var localStorage = window.localStorage;
 
 var cachedInfo = JSON.parse(localStorage.getItem('cachedInfo'));
@@ -57,6 +59,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
         var citersInfo = new XMLHttpRequest();
         citersInfo.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
+                if (cancelToken) { citersInfo.onreadystatechange = undefined; return; }
                 // Typical action to be performed when the document is ready:
                 var respons = JSON.parse(citersInfo.responseText)
                 var citers = respons.map(p => p.citing.substring(8, p.citing.length));
@@ -64,7 +67,10 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                 if (layers - 1 != 0) {
                     total = union(total, citers);
                     document.getElementById('total').innerHTML = total.size;
-                    citers.forEach(c => LoadPaper(c, layers - 1, infoCallback, citersCallback))
+                    citers.forEach(c => {
+                        if (cancelToken) { return; }
+                        LoadPaper(c, layers - 1, infoCallback, citersCallback);
+                    });
                 }
             }
         };
@@ -72,12 +78,14 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
         citersInfo.send();
     }
 
+    if (cancelToken) { return; }
     if (!count.has(doi)) {
         if (cachedInfo[doi] != undefined) {
             returnInfo(cachedInfo[doi])
         } else {
             var paperInfo = new XMLHttpRequest();
             paperInfo.onreadystatechange = function() {
+                if (cancelToken) { paperInfo.onreadystatechange = undefined; return; }
                 if (this.readyState == 4 && this.status == 200) {
                     // Typical action to be performed when the document is ready:
                     var respons = JSON.parse(paperInfo.responseText);

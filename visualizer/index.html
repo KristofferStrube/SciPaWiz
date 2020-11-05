@@ -60,9 +60,10 @@ text {
   Select Paper
 </button>
 <br />
-<button id="selectPaperButton">
-  Color
+<button id="stopFetchButton">
+  Stop Fetching Prematurely.
 </button>
+<br />
 <span id="count"></span>/<span id="total"></span>
 
 <svg width=960 height=600></svg>
@@ -93,9 +94,13 @@ authorButtonElement.addEventListener("click", () => GetPapersFromAuthor(authorEl
 var selectPaperButtonElement = document.getElementById('selectPaperButton');
 selectPaperButtonElement.addEventListener("click", () => newGraph(selectPaperElement.value));
 
+var stopFetchButtonElement = document.getElementById('stopFetchButton');
+stopFetchButtonElement.addEventListener("click", () => cancelToken = true);
+
 function newGraph(id) {
   data = [];
   ExclusionSet = new Set();
+  cancelToken = false;
   count = new Set([]);
   total = new Set([id]);
   document.getElementById('count').innerHTML = count.size;
@@ -154,6 +159,7 @@ function extendGraph(doi) {
   if (pressedKeys[17]) {
     newGraph(doi);
   } else {
+    cancelToken = false;
     total.add(doi);
     ExclusionSet.add(doi)
     document.getElementById('total').innerHTML = total.size;
