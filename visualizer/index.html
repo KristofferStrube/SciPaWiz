@@ -47,9 +47,9 @@ text {
 }
 </style>
 
-<label for="author">Author:</label><input id="author" />
+<label for="author">author:</label><input id="author" />
 <button id="authorButton" >
-  Fetch Authors papers
+  Fetch authors papers
 </button><br />
 <label for="layers">Layers:</label><input id="layers" value="3" /><br />
 
@@ -130,26 +130,26 @@ function updateEdges() {
   });
 }
 
-function infoCallback(doi, title) {
-  if (!data.map(p => p.Doi).includes(doi)) {
-    data.push({Doi: doi, Title: title, Citers: null})
+function infoCallback(doi, title, author, year) {
+  if (!data.map(p => p.doi).includes(doi)) {
+    data.push({doi: doi, title: title, citers: null, author: author, year: year})
   } else {
-    data.filter(p => p.Doi == doi)[0].Title = title
+    data.filter(p => p.doi == doi)[0].title = title
   }
 }
 
 function citersCallback(doi, citers) {
-  if (!data.map(p => p.Doi).includes(doi)) {
-    data.push({Doi: doi, Citers: citers})
+  if (!data.map(p => p.doi).includes(doi)) {
+    data.push({doi: doi, citers: citers})
   } else {
-    data.filter(p => p.Doi == doi)[0].Citers = citers
+    data.filter(p => p.doi == doi)[0].citers = citers
   }
   
   edges = {}
   g = nxclean(doi)
   render(inner, g);
   inner.selectAll("g.node")
-    .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
+    .attr("title", function(v) { return styleTooltip(g.node(v)) })
     .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); })
     .on("click", (id) => extendGraph(id))
   updateEdges();
@@ -175,8 +175,8 @@ var zoom = d3.zoom()
 svg.call(zoom);
 
 // Simple function to style the tooltip for the given node.
-var styleTooltip = function(name, description) {
-  return "<p class='name'>" + description + "</p><p class='description'>" + name + "</p>";
+var styleTooltip = function(paper) {
+  return "<p class='name'>" + paper.title + "</p><p class='description'>authors: " + paper.author + "</p><p class='description'>year: " + paper.year + "</p>";
 };
 
 
@@ -191,9 +191,9 @@ function load_graph() {
   g.graph().align = 'DR';
   //g.graph().ranker = 'tight-tree'
 
-  var cleanedData = data.filter(paper => paper.Citers != null)
+  var cleanedData = data.filter(paper => paper.citers != null)
   
-  var states = cleanedData.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; return dict}, {})
+  var states = cleanedData.reduce((dict, paper) => {dict[paper.doi] = paper; return dict}, {})
 
   // Add states to the graph, set labels, and style
   Object.keys(states).forEach(function(state) {
@@ -206,9 +206,9 @@ function load_graph() {
   });
 
   var options = {};
-  cleanedData.filter(paper => paper.Citers != null).forEach(paper => {
-      paper.Citers.filter(c => states[c] != null).forEach(citer => {
-          g.setEdge(paper.Doi, citer, {curve: d3.curveBasis});
+  cleanedData.filter(paper => paper.citers != null).forEach(paper => {
+      paper.citers.filter(c => states[c] != null).forEach(citer => {
+          g.setEdge(paper.doi, citer, {curve: d3.curveBasis});
       });
   });
 
@@ -224,11 +224,11 @@ function nxclean(doi) {
   //Make networkx version of the graph
   gx = new jsnx.DiGraph();
 
-  var cleanedData = data.filter(paper => paper.Citers != null)
+  var cleanedData = data.filter(paper => paper.citers != null)
   
-  var states = cleanedData.reduce((dict, paper) => {dict[paper.Doi] = {}; dict[paper.Doi].description = paper.Title ; dict[paper.Doi].citerCount = (paper.Citers != null ? paper.Citers.length : 0); return dict}, {})
+  var states = cleanedData.reduce((dict, paper) => {dict[paper.doi] = paper; dict[paper.doi].citerCount = (paper.citers != null ? paper.citers.length : 0); return dict}, {})
 
-  var max = cleanedData.map(p => p.Citers != null ? p.Citers.length : 0).reduce((prev, length) => Math.max(prev, length))
+  var max = cleanedData.map(p => p.citers != null ? p.citers.length : 0).reduce((prev, length) => Math.max(prev, length))
 
   //Add nodes directly from the data
   Object.keys(states).forEach(function(state) {
@@ -293,7 +293,7 @@ function nxclean(doi) {
   //Node can be loaded from data
   Object.keys(states).forEach(function(state) {
     var value = states[state];
-    value.label = value.citerCount;
+    value.label = value.citerCount.toString();
     value.rx = value.ry = 5;
     value.shape = "circle"
     value.style = `fill:grey; stroke:black; stroke-width:2; r:${60*value.citerCount/max+20};`
@@ -386,7 +386,7 @@ function findCycles(adj, node, visited, start, graph) {
 
 
 inner.selectAll("g.node")
-  .attr("title", function(v) { return styleTooltip(v, g.node(v).description) })
+  .attr("title", function(v) { return styleTooltip(g.node(v)) })
   .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
 
 // Center the graph
