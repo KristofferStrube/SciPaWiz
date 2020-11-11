@@ -15,8 +15,6 @@
 <script src="jsnetworkx.js"></script>
 <script src="loadData.js"></script>
 
-<h1>Dagre D3 Demo: Tooltip on Hover</h1>
-
 <style id="css">
 text {
   font-weight: 300;
@@ -101,7 +99,8 @@ function newGraph(id) {
   data = [];
   ExclusionSet = new Set();
   cancelToken = false;
-  count = new Set([]);
+  count = new Set();
+  countCiters = new Set();
   total = new Set([id]);
   document.getElementById('count').innerHTML = count.size;
   document.getElementById('total').innerHTML = total.size;
@@ -135,6 +134,8 @@ function infoCallback(doi, title, author, year) {
     data.push({doi: doi, title: title, citers: null, author: author, year: year})
   } else {
     data.filter(p => p.doi == doi)[0].title = title
+    data.filter(p => p.doi == doi)[0].author = author
+    data.filter(p => p.doi == doi)[0].year = year
   }
 }
 

@@ -1,4 +1,5 @@
 var count = new Set();
+var countCiters = new Set();
 var total = new Set();
 
 var cancelToken = false;
@@ -8,6 +9,10 @@ var localStorage = window.localStorage;
 var cachedInfo = JSON.parse(localStorage.getItem('cachedInfo'));
 if (cachedInfo == null) {
     cachedInfo = {}
+}
+var cachedCiters = JSON.parse(localStorage.getItem('cachedCiters'));
+if (cachedCiters == null) {
+    cachedCiters = {}
 }
 
 Array.prototype.uniqueText = function() {
@@ -53,17 +58,35 @@ function union(setA, setB) {
 }
 
 function LoadPaper(doi, layers, infoCallback, citersCallback) {
+    if (cancelToken) { return; }
     if (layers != 0) {
-        var citersInfo = new XMLHttpRequest();
-        citersInfo.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                if (cancelToken) { citersInfo.onreadystatechange = undefined; return; }
-                var respons = JSON.parse(citersInfo.responseText);
+        if (!countCiters.has(doi)) {
+            if (cachedCiters[doi] != undefined) {
+                returnCiters(cachedCiters[doi])
+            } else {
+                var citersInfo = new XMLHttpRequest();
+                citersInfo.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        if (cancelToken) { citersInfo.onreadystatechange = undefined; return; }
+                        var respons = JSON.parse(citersInfo.responseText);
+                        cachedCiters[doi] = respons;
+                        localStorage.setItem('cachedCiters', JSON.stringify(cachedCiters));
+                        returnCiters(respons)
+                    }
+                };
+                citersInfo.open("POST", `https://kristoffer-strube.dk/CitingAPI/Citations/Citers`, true);
+                citersInfo.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                citersInfo.send(`doi=${doi}`);
+            }
+
+            function returnCiters(respons) {
                 var citers = respons.map(p => p.citing.substring(8, p.citing.length));
                 citersCallback(doi, citers)
                 if (layers - 1 != 0) {
                     total = union(total, citers);
                     document.getElementById('total').innerHTML = total.size;
+
+                    countCiters.add(doi)
                     citers.forEach(c => {
                         setTimeout(() => {
                             LoadPaper(c, layers - 1, infoCallback, citersCallback);
@@ -71,10 +94,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                     });
                 }
             }
-        };
-        citersInfo.open("POST", `https://kristoffer-strube.dk/CitingAPI/Citations/Citers`, true);
-        citersInfo.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        citersInfo.send(`doi=${doi}`);
+        }
     }
 
     if (cancelToken) { return; }
@@ -86,7 +106,6 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
             paperInfo.onreadystatechange = function() {
                 if (cancelToken) { paperInfo.onreadystatechange = undefined; return; }
                 if (this.readyState == 4 && this.status == 200) {
-                    // Typical action to be performed when the document is ready:
                     var respons = JSON.parse(paperInfo.responseText);
                     cachedInfo[doi] = respons;
                     localStorage.setItem('cachedInfo', JSON.stringify(cachedInfo));
