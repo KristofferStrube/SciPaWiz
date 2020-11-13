@@ -281,7 +281,6 @@ function nxclean(doi) {
   var g = new dagreD3.graphlib.Graph({compound:true}).setGraph({});
 
   g.graph().rankdir = 'LR';
-  g.graph().align = 'DR';
 
   cliques.filter(c => c.length == 2).forEach(clique => {
     var restOfNodes = cliques.filter(c => c != clique).flat();
@@ -296,8 +295,8 @@ function nxclean(doi) {
     var value = states[state];
     value.label = value.citerCount.toString();
     value.rx = value.ry = 5;
-    value.shape = "circle"
-    value.style = `fill:grey; stroke:black; stroke-width:2; r:${60*value.citerCount/max+20};`
+    value.shape = "circle";
+    value.style = `fill:grey; stroke:black; stroke-width:2; r:${60*value.citerCount/max+20};`;
     g.setNode(state, value);
   });
 
@@ -305,20 +304,24 @@ function nxclean(doi) {
     var color = getRandomColor()
     clique.forEach((node, index) => {   
       if ((index + 1) != (clique.length)) {
+        var id = queryId("edge"+(node+clique[index+1]));
+        if (edges.hasOwnProperty(id)) {
+          edges[id].push(color);
+        } else {
+          edges[id] = [color];
+        }
         if (clique.length == 2) {
           g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`})
         } else {
-          var id = "edge"+(node+clique[index+1]).replaceAll(".", "").replaceAll("/","");
           g.setEdge(node, clique[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
-          if (edges.hasOwnProperty(id)) {
-            edges[id].push(color);
-          } else {
-            edges[id] = [color];
-          }
         }
       }
     })
   })
+
+  function queryId(id) {
+    return id.replaceAll(".", "").replaceAll("/","").replaceAll("(", "").replaceAll(")", "")
+  }
 
   function compareLength(a, b) {
     if ( a.length < b.length ){
@@ -330,11 +333,48 @@ function nxclean(doi) {
     return 0;
   }
 
-  g.setNode("mainGroup", {style: `fill: white`})
+  g.setNode("mainGroup", {style: `stroke: transparent; fill: white`})
   if (cliques.length != 0) {
     cliques.sort(compareLength).reverse()[0].forEach((node, index) => {
       g.setParent(node, "mainGroup");
     });
+  }
+
+  var yearGroups = Object.values(states).reduce((groups, node) => {(groups[node.year] = groups[node.year] || []).push(node); return groups}, {})
+
+  delete yearGroups[undefined]
+
+  function compareCiterLengths(a, b) {
+    if ( a.citerCount > b.citerCount ){
+      return -1;
+    }
+    if ( a.citerCount < b.citerCount ){
+      return 1;
+    }
+    return 0;
+  }
+
+  g.setNode("LastNode", {label:"" , style: `stroke: transparent; fill: white`})
+
+  var years = Object.keys(yearGroups).filter(year => year != "" && year != null && year != undefined);
+  for (i = 0; i<years.length-1; i++) {
+    var group = yearGroups[years[i]].map(node => node.doi)
+    var nextGroupRep = yearGroups[years[i+1]].sort(compareCiterLengths)[0].doi
+    group.forEach(node => {
+      var id = queryId("edge"+(node+nextGroupRep));
+      if (!edges.hasOwnProperty(id)) {
+        g.setEdge(node, nextGroupRep, {style: `stroke: transparent; stroke-width: 1;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
+      }
+    })
+  }
+  if (years.length > 0) {
+    var lastGroup = yearGroups[years[years.length-1]].map(node => node.doi)
+    lastGroup.forEach(node => {
+      var id = queryId("edge"+(node+nextGroupRep));
+      if (!edges.hasOwnProperty(id)) {
+        g.setEdge(node, "LastNode", {style: `stroke: transparent; stroke-width: 1;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
+      }
+    })
   }
 
   return g
