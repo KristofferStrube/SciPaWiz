@@ -45,7 +45,7 @@ function GetPapersFromAuthor(author, selectElement) {
             });
         }
     };
-    xhttp.open("GET", `https://kristoffer-strube.dk/CitingAPI/Citations/AuthorsCiters/${author}`, true);
+    xhttp.open("GET", `https://kristoffer-strube.dk/API/Citations/AuthorsCiters/${author}`, true);
     xhttp.send();
 }
 
@@ -74,7 +74,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                         returnCiters(respons)
                     }
                 };
-                citersInfo.open("POST", `https://kristoffer-strube.dk/CitingAPI/Citations/Citers`, true);
+                citersInfo.open("POST", `https://kristoffer-strube.dk/API/Citations/Citers`, true);
                 citersInfo.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 citersInfo.send(`doi=${doi}`);
             }
@@ -112,7 +112,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                     returnInfo(respons);
                 }
             };
-            paperInfo.open("POST", `https://kristoffer-strube.dk/CitingAPI/Citations/Info`, true);
+            paperInfo.open("POST", `https://kristoffer-strube.dk/API/Citations/Info`, true);
             paperInfo.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             paperInfo.send(`doi=${doi}`);
         }

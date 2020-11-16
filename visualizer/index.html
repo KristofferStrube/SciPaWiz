@@ -15,6 +15,10 @@
 <script src="jsnetworkx.js"></script>
 <script src="loadData.js"></script>
 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
 <style id="css">
 text {
   font-weight: 300;
@@ -45,28 +49,55 @@ text {
 }
 </style>
 
-<label for="author">author:</label><input id="author" />
-<button id="authorButton" >
-  Fetch authors papers
-</button><br />
-<label for="layers">Layers:</label><input id="layers" value="3" /><br />
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <label for="author">author:</label><input id="author" />
+      <button id="authorButton" >
+        Fetch authors papers
+      </button><br />
+      <label for="layers">Layers:</label><input id="layers" value="3" /><br />
 
-<select id="selectPaper">
-  <option></option>
-</select>
-<button id="selectPaperButton">
-  Select Paper
-</button>
-<br />
-<button id="stopFetchButton">
-  Stop Fetching Prematurely.
-</button>
-<br />
-<span id="count"></span>/<span id="total"></span>
-
-<svg width=960 height=600></svg>
+      <select id="selectPaper">
+        <option></option>
+      </select>
+      <button id="selectPaperButton">
+        Select Paper
+      </button>
+      <br />
+      <button id="stopFetchButton">
+        Stop Fetching Prematurely.
+      </button>
+      <br />
+      <span id="count"></span>/<span id="total"></span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-10">
+      <svg width=960 height=600>
+        <defs>
+          <filter id="glow">
+            <fegaussianblur class="blur" result="coloredBlur" stddeviation="4"></fegaussianblur>
+            <femerge>
+              <femergenode in="coloredBlur"></femergenode>
+              <femergenode in="coloredBlur"></femergenode>
+              <femergenode in="coloredBlur"></femergenode>
+              <femergenode in="SourceGraphic"></femergenode>
+            </femerge>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+    <div class="col-lg-2" style="border:1;">
+      <h1>Sidebar!</h1>
+      <div id="cliqueList"></div>
+    </div>
+  </div>
+</div>
 
 <script>
+var cliques
+
 var edges = {}
 
 var ExclusionSet = new Set();
@@ -113,6 +144,14 @@ var g = nxclean("10.1007/978-3-642-40450-4_63")
 // Run the renderer. This is what draws the final graph.
 render(inner, g);
 inner.selectAll("g.node").on("click", (id) => extendGraph(id));
+inner.selectAll("g.edgePath").each((e) => {
+  var id = queryId("edge"+e.v+e.w);
+  var colors = edges[id];
+  if (colors != undefined) {
+    inner.select("#"+id).on("mouseover", () => highlightClique(colors[0]))
+    inner.select("#"+id).on("mouseout", () => inner.selectAll("g.edgePath").style("filter", ""))
+  }
+})
 
 updateEdges();
 
@@ -126,6 +165,16 @@ function updateEdges() {
         .attr("d", d)
         .attr("class", "path")
     }
+  });
+}
+
+function highlightClique(color) {
+  console.log("GLOW!!! ", color)
+  clique = cliques.filter(clique => clique.color == color)[0];
+  inner.selectAll("g.edgePath").style("filter", "");
+  clique.edges.forEach(edge => {
+    var elem = inner.select("#" + edge);
+    elem.style("filter", "url(#glow)");
   });
 }
 
@@ -153,6 +202,10 @@ function citersCallback(doi, citers) {
     .attr("title", function(v) { return styleTooltip(g.node(v)) })
     .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); })
     .on("click", (id) => extendGraph(id))
+  inner.selectAll("g.edgePath").each((e) => {
+    console.log(e)
+    e.on("mouseover", function(){})
+  })
   updateEdges();
 }
 
@@ -259,7 +312,7 @@ function nxclean(doi) {
 
   var cliques_iterator = jsnx.findCliques(gx)
 
-  var cliques = Array.from(cliques_iterator)
+  cliques = Array.from(cliques_iterator)
 
   //Sort cliques according to topology order
   const sorter = (a, b) => {
@@ -276,17 +329,18 @@ function nxclean(doi) {
 
   cliques.forEach(clique => {clique.sort(sorter)})
 
+  cliques = cliques.map(clique => {return {nodes: clique, edges: [], color: getRandomColor()}})
 
   //Make the actual graph based on cliques
   var g = new dagreD3.graphlib.Graph({compound:true}).setGraph({});
 
   g.graph().rankdir = 'LR';
 
-  cliques.filter(c => c.length == 2).forEach(clique => {
-    var restOfNodes = cliques.filter(c => c != clique).flat();
-    if(!restOfNodes.includes(clique[1]) && !ExclusionSet.has(clique[0])) {
+  cliques.filter(c => c.nodes.length == 2).forEach(clique => {
+    var restOfNodes = cliques.filter(c => c != clique).map(c => c.nodes).flat();
+    if(!restOfNodes.includes(clique.nodes[1]) && !ExclusionSet.has(clique.nodes[0])) {
       cliques.splice(cliques.indexOf(clique),1)
-      delete states[clique[1]];
+      delete states[clique.nodes[1]];
     }
   });
   
@@ -296,38 +350,47 @@ function nxclean(doi) {
     value.label = value.citerCount.toString();
     value.rx = value.ry = 5;
     value.shape = "circle";
+    value.id = queryId(value.doi);
     value.style = `fill:grey; stroke:black; stroke-width:2; r:${60*value.citerCount/max+20};`;
     g.setNode(state, value);
   });
 
+
   cliques.forEach(clique => {
-    var color = getRandomColor()
-    clique.forEach((node, index) => {   
-      if ((index + 1) != (clique.length)) {
-        var id = queryId("edge"+(node+clique[index+1]));
+    var color = clique.color;
+    clique.nodes.forEach((node, index) => {   
+      if ((index + 1) != (clique.nodes.length)) {
+        var id = queryId("edge"+(node+clique.nodes[index+1]));
+        clique.edges.push(id);
         if (edges.hasOwnProperty(id)) {
           edges[id].push(color);
         } else {
           edges[id] = [color];
         }
-        if (clique.length == 2) {
-          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`})
+        if (clique.nodes.length == 2) {
+          g.setEdge(node, clique.nodes[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`})
         } else {
-          g.setEdge(node, clique[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
+          g.setEdge(node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
         }
       }
     })
   })
 
-  function queryId(id) {
-    return id.replaceAll(".", "").replaceAll("/","").replaceAll("(", "").replaceAll(")", "")
-  }
+  var cliqueList = document.getElementById('cliqueList');
+
+  cliques.filter(c => c.nodes.length != 2).forEach(clique => {
+    var elem = document.createElement("div");
+    elem.innerHTML = clique.color;
+    elem.style = `background-color:${clique.color};`;
+    elem.addEventListener("click", () => highlightClique(clique.color));
+    cliqueList.appendChild(elem);
+  });
 
   function compareLength(a, b) {
-    if ( a.length < b.length ){
+    if ( a.nodes.length < b.nodes.length ){
       return -1;
     }
-    if ( a.length > b.length ){
+    if ( a.nodes.length > b.nodes.length ){
       return 1;
     }
     return 0;
@@ -335,7 +398,7 @@ function nxclean(doi) {
 
   g.setNode("mainGroup", {style: `stroke: transparent; fill: white`})
   if (cliques.length != 0) {
-    cliques.sort(compareLength).reverse()[0].forEach((node, index) => {
+    cliques.sort(compareLength).reverse()[0].nodes.forEach((node, index) => {
       g.setParent(node, "mainGroup");
     });
   }
@@ -355,6 +418,7 @@ function nxclean(doi) {
   }
 
   g.setNode("LastNode", {label:"" , style: `stroke: transparent; fill: white`})
+
 
   var years = Object.keys(yearGroups).filter(year => year != "" && year != null && year != undefined);
   for (i = 0; i<years.length-1; i++) {
@@ -379,6 +443,10 @@ function nxclean(doi) {
 
   return g
 
+}
+
+function queryId(id) {
+  return id.replaceAll(".", "").replaceAll("/","").replaceAll("(", "").replaceAll(")", "")
 }
 
 function getRandomColor() {
