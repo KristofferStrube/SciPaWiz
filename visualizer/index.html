@@ -403,7 +403,7 @@ function nxclean(doi) {
   edgeList = edgeList.sort(edgeSorter)
 
   edgeList.forEach((edge, i) => {
-    weight = edgeList.length-i    
+    weight = i//edgeList.length-i    
     var id = queryId("edge"+(edge[0]+edge[1]));
     edge[2].weight = weight
     g.setEdge(edge[0], edge[1], edge[2])
