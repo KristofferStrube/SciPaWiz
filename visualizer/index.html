@@ -202,10 +202,10 @@ function citersCallback(doi, citers) {
     .attr("title", function(v) { return styleTooltip(g.node(v)) })
     .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); })
     .on("click", (id) => extendGraph(id))
-  inner.selectAll("g.edgePath").each((e) => {
+ /*inner.selectAll("g.edgePath").each((e) => {
     console.log(e)
     e.on("mouseover", function(){})
-  })
+  })*/
   updateEdges();
 }
 
