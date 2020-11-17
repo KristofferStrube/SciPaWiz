@@ -39,8 +39,8 @@ Mandag d. 2/11/2020
 - Overvej værktøjets fokus (Finde de obskure små papers eller tydeliggør de store kendte kæder)
 
 - Find eksempel hvor vores visualisering finder noget som f.eks google scholar ikke finder 
+- Scale numbers in nodes and change font color
 -
-
 
 Bonus:
 - Hvis vi vil lave et kandidat projekt om dette, så er vi velkomne til at kontakte ham
