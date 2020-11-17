@@ -345,6 +345,7 @@ function nxclean(doi) {
   });
   
   //Node can be loaded from data
+  //_nodes = shuffle(Object.keys(states))
   Object.keys(states).forEach(function(state) {
     var value = states[state];
     value.label = value.citerCount.toString();
@@ -355,26 +356,62 @@ function nxclean(doi) {
     g.setNode(state, value);
   });
 
-
+  //Sort edges for rendering order and add them
+  edgeList = []
   cliques.forEach(clique => {
     var color = clique.color;
     clique.nodes.forEach((node, index) => {   
       if ((index + 1) != (clique.nodes.length)) {
+        
         var id = queryId("edge"+(node+clique.nodes[index+1]));
         clique.edges.push(id);
         if (edges.hasOwnProperty(id)) {
           edges[id].push(color);
         } else {
           edges[id] = [color];
-        }
+        }  
         if (clique.nodes.length == 2) {
-          g.setEdge(node, clique.nodes[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`})
+          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`}])
         } else {
-          g.setEdge(node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
+          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`}])
         }
       }
     })
   })
+  const edgeSorter = (a, b) => {
+    ia_first = sortOrder.indexOf(a[0]);
+    ib_first = sortOrder.indexOf(b[0]); 
+    if ( ia_first < ib_first ) {
+        return -1;
+    };
+    if (ia_first > ib_first ) {
+      return 1;
+    }
+    //if first nodes are equal
+    ia_sec = sortOrder.indexOf(a[1]);
+    ib_sec = sortOrder.indexOf(b[1]); 
+    if ( ia_sec < ib_sec ) {
+        return -1;
+    };
+    if (ia_sec > ib_sec ) {
+      return 1;
+    }
+    return 0;
+  };
+
+  //edgeList = g.edges().map(x => [x["w"],x["v"],{"label":""}])
+  edgeList = edgeList.sort(edgeSorter)
+
+  edgeList.forEach((edge, i) => {
+    weight = edgeList.length-i    
+    var id = queryId("edge"+(edge[0]+edge[1]));
+    edge[2].weight = weight
+    g.setEdge(edge[0], edge[1], edge[2])
+    
+  })
+
+
+
 
   var cliqueList = document.getElementById('cliqueList');
 
@@ -396,6 +433,19 @@ function nxclean(doi) {
     return 0;
   }
 
+  function haveOverlap(a, b) {
+    return a.some( node => {
+      b.indexOf(node) != -1
+    })
+  } 
+/*
+cliques.filter(c => c.nodes.length != 2).forEach((clique, i ) => { 
+  g.setNode('Group'+i, {style: `stroke: transparent; fill: white`})
+  clique.nodes.forEach(node => {
+    g.setParent(node, 'Group'+i)
+  });
+});*/
+
   g.setNode("mainGroup", {style: `stroke: transparent; fill: white`})
   if (cliques.length != 0) {
     cliques.sort(compareLength).reverse()[0].nodes.forEach((node, index) => {
@@ -403,7 +453,7 @@ function nxclean(doi) {
     });
   }
 
-  var yearGroups = Object.values(states).reduce((groups, node) => {(groups[node.year] = groups[node.year] || []).push(node); return groups}, {})
+ var yearGroups = Object.values(states).reduce((groups, node) => {(groups[node.year] = groups[node.year] || []).push(node); return groups}, {})
 
   delete yearGroups[undefined]
 
@@ -440,6 +490,11 @@ function nxclean(doi) {
       }
     })
   }
+  
+  
+  g.graph().ranksep = 70
+  g.graph().edgesep = 30
+  g.graph().ranker = "tight-tree"
 
   return g
 
@@ -491,6 +546,20 @@ function findCycles(adj, node, visited, start, graph) {
     }
   })     
   visited[node]=false;
+}
+
+
+
+// function to shuffle list
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i -= 1) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+    return a;
 }
 
 
