@@ -26,3 +26,21 @@ Mandag d. 2/11/2020
 - Vi kan vise screenshots af eksisterende visualiseringer
 - Hvad for noget nyt gør vi med visualisering af DAGs og "scholarly publications"
 - Ideen om at finde "what's common" mellem publikationer er interessant. Vi udvider hvad der allerede eksisterer, ved at udregne ting man ikke allerede kan få ud af sine visualiseringer. Vi skal gøre klart hvad vi gør nyt.
+
+
+## Respons fra presentation 2
+- "I really like this a lot"
+- Add fetch med google scholar id (Det kan vi godt ifølge robot.txt)
+- Skjul farver som standart og vis dem kun ved hover/select (vi kan lave en toggle mellem to modes her, hvis vi lyster)
+- Kig mere ind på scaling muligheder
+
+- Have både node- og edgebased exploration så sensor ikke har noget at spørge om 
+
+- Overvej værktøjets fokus (Finde de obskure små papers eller tydeliggør de store kendte kæder)
+
+- Find eksempel hvor vores visualisering finder noget som f.eks google scholar ikke finder 
+-
+
+
+Bonus:
+- Hvis vi vil lave et kandidat projekt om dette, så er vi velkomne til at kontakte ham
