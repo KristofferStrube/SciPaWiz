@@ -106,6 +106,11 @@ var pressedKeys = {};
 window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
 window.onkeydown = function(e) { pressedKeys[e.keyCode] = true; }
 
+// Simple function to style the tooltip for the given node.
+var styleTooltip = function(paper) {
+  return "<p class='name'>" + paper.title + "</p><p class='description'>authors: " + paper.author + "</p><p class='description'>year: " + paper.year + "</p>";
+};
+
 // Create the renderer
 var render = new dagreD3.render();
 
@@ -138,24 +143,25 @@ function newGraph(id) {
   LoadPaper(id, layersElement.value, infoCallback, citersCallback);
 }
 
-// Create a new directed graph
-var g = nxclean("10.1007/978-3-642-40450-4_63")
+updateGraph("10.1007/978-3-642-40450-4_63");
 
-// Run the renderer. This is what draws the final graph.
-render(inner, g);
-inner.selectAll("g.node").on("click", (id) => extendGraph(id));
-inner.selectAll("g.edgePath").each((e) => {
-  var id = queryId("edge"+e.v+e.w);
-  var colors = edges[id];
-  if (colors != undefined) {
-    inner.select("#"+id).on("mouseover", () => highlightClique(colors[0]))
-    inner.select("#"+id).on("mouseout", () => inner.selectAll("g.edgePath").style("filter", ""))
-  }
-})
-
-updateEdges();
-
-function updateEdges() {
+function updateGraph(doi) {
+  edges = {}
+  g = nxclean(doi)
+  render(inner, g);
+  inner.selectAll("g.node")
+    .attr("title", function(v) { return styleTooltip(g.node(v)) })
+    .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); })
+    .on("click", (id) => extendGraph(id))
+  inner.selectAll("g.edgePath").each((e) => {
+    var id = queryId("edge"+e.v+e.w);
+    var colors = edges[id];
+    if (colors != undefined) {
+      inner.select("#"+id).on("mouseover", () => {inner.selectAll(".glower").remove(); colors.forEach(color => highlightClique(color));})
+      inner.select("#"+id).on("mouseout", () => inner.selectAll(".glower").remove())
+    }
+  })
+  
   Object.keys(edges).filter(e => edges[e].length > 1).forEach(e => {
     var d = inner.select("#" + e + " > path")._groups[0][0].getAttribute("d")
     inner.select("#" + e).html("");
@@ -171,10 +177,12 @@ function updateEdges() {
 function highlightClique(color) {
   console.log("GLOW!!! ", color)
   clique = cliques.filter(clique => clique.color == color)[0];
-  inner.selectAll("g.edgePath").style("filter", "");
-  clique.edges.forEach(edge => {
-    var elem = inner.select("#" + edge);
-    elem.style("filter", "url(#glow)");
+  clique.edges.forEach(e => {
+    var d = inner.select("#" + e + " > path")._groups[0][0].getAttribute("d")
+    inner.select("#" + e).append("path")
+        .attr("style", `stroke:${color};stroke-width:${edges[e].length*4*3};opacity:0.5`)
+        .attr("d", d)
+        .attr("class", "path glower")
   });
 }
 
@@ -186,6 +194,7 @@ function infoCallback(doi, title, author, year) {
     data.filter(p => p.doi == doi)[0].author = author
     data.filter(p => p.doi == doi)[0].year = year
   }
+  updateGraph(doi);
 }
 
 function citersCallback(doi, citers) {
@@ -194,19 +203,7 @@ function citersCallback(doi, citers) {
   } else {
     data.filter(p => p.doi == doi)[0].citers = citers
   }
-  
-  edges = {}
-  g = nxclean(doi)
-  render(inner, g);
-  inner.selectAll("g.node")
-    .attr("title", function(v) { return styleTooltip(g.node(v)) })
-    .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); })
-    .on("click", (id) => extendGraph(id))
- /*inner.selectAll("g.edgePath").each((e) => {
-    console.log(e)
-    e.on("mouseover", function(){})
-  })*/
-  updateEdges();
+  updateGraph(doi);
 }
 
 function extendGraph(doi) {
@@ -227,15 +224,6 @@ var zoom = d3.zoom()
       inner.attr("transform", d3.event.transform);
     });
 svg.call(zoom);
-
-// Simple function to style the tooltip for the given node.
-var styleTooltip = function(paper) {
-  return "<p class='name'>" + paper.title + "</p><p class='description'>authors: " + paper.author + "</p><p class='description'>year: " + paper.year + "</p>";
-};
-
-
-
-
 
 /*returns a graph constructed directly from the datafile*/
 function load_graph() {
@@ -329,7 +317,7 @@ function nxclean(doi) {
 
   cliques.forEach(clique => {clique.sort(sorter)})
 
-  cliques = cliques.map(clique => {return {nodes: clique, edges: [], color: getRandomColor()}})
+  cliques = cliques.map(clique => {return {nodes: clique, edges: []}})
 
   //Make the actual graph based on cliques
   var g = new dagreD3.graphlib.Graph({compound:true}).setGraph({});
@@ -343,6 +331,10 @@ function nxclean(doi) {
       delete states[clique.nodes[1]];
     }
   });
+
+  for (i = 0; i<cliques.length; i++) {
+    cliques[i].color = rainbow(cliques.length-1, i)
+  }
   
   //Node can be loaded from data
   //_nodes = shuffle(Object.keys(states))
@@ -414,12 +406,13 @@ function nxclean(doi) {
 
 
   var cliqueList = document.getElementById('cliqueList');
+  cliqueList.innerHTML = "";
 
   cliques.filter(c => c.nodes.length != 2).forEach(clique => {
     var elem = document.createElement("div");
     elem.innerHTML = clique.color;
     elem.style = `background-color:${clique.color};`;
-    elem.addEventListener("click", () => highlightClique(clique.color));
+    elem.addEventListener("click", () => {inner.selectAll(".glower").remove(); highlightClique(clique.color);});
     cliqueList.appendChild(elem);
   });
 
@@ -513,6 +506,27 @@ function getRandomColor() {
   return color;
 }
 
+function rainbow(numOfSteps, step) {
+    // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
+    // Adam Cole, 2011-Sept-14
+    // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+    var r, g, b;
+    var h = step / numOfSteps;
+    var i = ~~(h * 6);
+    var f = h * 6 - i;
+    var q = 1 - f;
+    switch(i % 6){
+        case 0: r = 1; g = f; b = 0; break;
+        case 1: r = q; g = 1; b = 0; break;
+        case 2: r = 0; g = 1; b = f; break;
+        case 3: r = 0; g = q; b = 1; break;
+        case 4: r = f; g = 0; b = 1; break;
+        case 5: r = 1; g = 0; b = q; break;
+    }
+    var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
+    return (c);
+}
+
 function makeAdjecencyMap(gx) {
   var adj = new Map()
   gx.nodes().forEach(node => {
@@ -561,11 +575,6 @@ function shuffle(a) {
     }
     return a;
 }
-
-
-inner.selectAll("g.node")
-  .attr("title", function(v) { return styleTooltip(g.node(v)) })
-  .each(function(v) { $(this).tipsy({ gravity: "w", opacity: 1, html: true }); });
 
 // Center the graph
 var initialScale = 0.75;
