@@ -74,22 +74,11 @@ text {
   </div>
   <div class="row">
     <div class="col-lg-10">
-      <svg width=960 height=600>
-        <defs>
-          <filter id="glow">
-            <fegaussianblur class="blur" result="coloredBlur" stddeviation="4"></fegaussianblur>
-            <femerge>
-              <femergenode in="coloredBlur"></femergenode>
-              <femergenode in="coloredBlur"></femergenode>
-              <femergenode in="coloredBlur"></femergenode>
-              <femergenode in="SourceGraphic"></femergenode>
-            </femerge>
-          </filter>
-        </defs>
+      <svg width=960 height=600 >
       </svg>
     </div>
     <div class="col-lg-2" style="border:1;">
-      <h1>Sidebar!</h1>
+      <h1>Chains!</h1>
       <div id="cliqueList"></div>
     </div>
   </div>
@@ -97,6 +86,8 @@ text {
 
 <script>
 var cliques
+
+var rootnode = "10.1137/1.9781611973099.49"
 
 var edges = {}
 
@@ -108,7 +99,7 @@ window.onkeydown = function(e) { pressedKeys[e.keyCode] = true; }
 
 // Simple function to style the tooltip for the given node.
 var styleTooltip = function(paper) {
-  return "<p class='name'>" + paper.title + "</p><p class='description'>authors: " + paper.author + "</p><p class='description'>year: " + paper.year + "</p>";
+  return "<p class='name'>" + paper.title + "</p><p class='description'>authors: " + paper.author + "</p><p class='description'>year: " + paper.year + "</p></p><p class='description'>source: " + paper.title_source + "</p>";
 };
 
 // Create the renderer
@@ -131,6 +122,8 @@ selectPaperButtonElement.addEventListener("click", () => newGraph(selectPaperEle
 var stopFetchButtonElement = document.getElementById('stopFetchButton');
 stopFetchButtonElement.addEventListener("click", () => cancelToken = true);
 
+newGraph(rootnode);
+
 function newGraph(id) {
   data = [];
   ExclusionSet = new Set();
@@ -143,11 +136,9 @@ function newGraph(id) {
   LoadPaper(id, layersElement.value, infoCallback, citersCallback);
 }
 
-updateGraph("10.1007/978-3-642-40450-4_63");
-
-function updateGraph(doi) {
+function updateGraph() {
   edges = {}
-  g = nxclean(doi)
+  g = nxclean()
   render(inner, g);
   inner.selectAll("g.node")
     .attr("title", function(v) { return styleTooltip(g.node(v)) })
@@ -186,11 +177,12 @@ function highlightClique(color) {
   });
 }
 
-function infoCallback(doi, title, author, year) {
+function infoCallback(doi, title, title_source, author, year) {
   if (!data.map(p => p.doi).includes(doi)) {
-    data.push({doi: doi, title: title, citers: null, author: author, year: year})
+    data.push({doi: doi, title: title, title_source: title_source, citers: null, author: author, year: year})
   } else {
     data.filter(p => p.doi == doi)[0].title = title
+    data.filter(p => p.doi == doi)[0].title_source = title_source
     data.filter(p => p.doi == doi)[0].author = author
     data.filter(p => p.doi == doi)[0].year = year
   }
@@ -240,10 +232,6 @@ function load_graph() {
   // Add states to the graph, set labels, and style
   Object.keys(states).forEach(function(state) {
     var value = states[state];
-    value.label = " ";
-    value.rx = value.ry = 10;
-    value.shape = "circle"
-    value.style = "fill:white; stroke:black; stroke-width:2;"
     g.setNode(state, value);
   });
 
@@ -258,7 +246,7 @@ function load_graph() {
 }
 
 /*Returns a cleaned graph based on cliques*/
-function nxclean(doi) {
+function nxclean() {
   //Load dagre graph
   var gd = load_graph()
 
@@ -285,7 +273,6 @@ function nxclean(doi) {
   });
 
   //Rank nodes for later MUST BE DONE HERE DO NOT MOVE DOWN
-  var source_node = doi
   var adjecencyMap = makeAdjecencyMap(gx)
 
   gx.nodes().forEach( node => findCycles(adjecencyMap, node, {}, node, gx))
@@ -338,13 +325,13 @@ function nxclean(doi) {
   
   //Node can be loaded from data
   //_nodes = shuffle(Object.keys(states))
-  Object.keys(states).forEach(function(state) {
+  Object.keys(states).forEach(state => {
     var value = states[state];
     value.label = value.citerCount.toString();
     value.rx = value.ry = 5;
     value.shape = "circle";
     value.id = queryId(value.doi);
-    value.style = `fill:grey; stroke:black; stroke-width:2; r:${60*value.citerCount/max+20};`;
+    value.style = `fill:lightgrey; stroke:black; stroke-width:2; r:${60*value.citerCount/max+20};`;
     g.setNode(state, value);
   });
 
@@ -404,14 +391,58 @@ function nxclean(doi) {
 
 
 
-
+  // Generate sidebar
   var cliqueList = document.getElementById('cliqueList');
   cliqueList.innerHTML = "";
 
-  cliques.filter(c => c.nodes.length != 2).forEach(clique => {
+  cliques.filter(c => c.nodes.length != 2).sort(compareLength).reverse().forEach(clique => {
     var elem = document.createElement("div");
-    elem.innerHTML = clique.color;
-    elem.style = `background-color:${clique.color};`;
+
+    // Identify keywords
+    var keyWords = {}
+    clique.nodes.forEach(node => {
+      remove = ["-", "!", "$", "(", ")", "/", "\n", ",", ":", "."]
+      sanitized_title = states[node].title != undefined ? remove.reduce((t, sym) => t.replaceAll(sym, ""), states[node].title.toLowerCase()) : ""
+      words_in_title = sanitized_title.split(" ")
+      words_in_title.forEach(word => keyWords[word] != undefined && word.length > 2 ? keyWords[word]++: keyWords[word] = 1)
+    })
+    function sortKeyValues(a, b) {
+      if ( keyWords[a] > keyWords[b] ){
+        return -1;
+      }
+      if ( keyWords[a] < keyWords[b] ){
+        return 1;
+      }
+      return 0;
+    }
+    var importWords = Object.keys(keyWords).sort(sortKeyValues)
+
+    // Identify start and end years for clique
+    var sortedYears = clique.nodes.map(node => states[node].year).filter(y => y != undefined).sort();
+    var earliestYear = sortedYears[0]
+    var latestYear = sortedYears[sortedYears.length -1]
+
+    // Identify all authors for clique
+    var authors = {}
+    clique.nodes.forEach(node => {
+      authors_for_paper = states[node].author != undefined ? states[node].author.split(";") : []
+      authors_for_paper.forEach(author => authors[author] != undefined ? authors[author]++ : authors[author] = 1)
+    });
+
+    var importantAuthors = Object.keys(authors).map(function(key) {
+      return [key, authors[key]];
+    });
+    importantAuthors.sort(function(first, second) {
+      return second[1] - first[1];
+    });
+    
+    // Generate innerHtml
+    elem.innerHTML = `
+    <div style="display:inline-block;height:15px;width:15px;padding-left:4px;padding-top:0px;line-height:1;color:white;background-color:${clique.color}">${clique.nodes.length}</div>
+    <b> ${importWords[0]}, ${importWords[1]}, ${importWords[2]}</b><br />
+    ${earliestYear} - ${latestYear}<br />` +
+    (importantAuthors[0] != undefined ? `${importantAuthors[0][0]} (${importantAuthors[0][1]}/${clique.nodes.length})` : "") +
+    `<hr style="margin:5px;" />`;
     elem.addEventListener("click", () => {inner.selectAll(".glower").remove(); highlightClique(clique.color);});
     cliqueList.appendChild(elem);
   });
@@ -431,8 +462,8 @@ function nxclean(doi) {
       b.indexOf(node) != -1
     })
   } 
-/*
-cliques.filter(c => c.nodes.length != 2).forEach((clique, i ) => { 
+
+/*cliques.filter(c => c.nodes.length != 2).forEach((clique, i ) => { 
   g.setNode('Group'+i, {style: `stroke: transparent; fill: white`})
   clique.nodes.forEach(node => {
     g.setParent(node, 'Group'+i)
@@ -445,7 +476,6 @@ cliques.filter(c => c.nodes.length != 2).forEach((clique, i ) => {
       g.setParent(node, "mainGroup");
     });
   }
-
  var yearGroups = Object.values(states).reduce((groups, node) => {(groups[node.year] = groups[node.year] || []).push(node); return groups}, {})
 
   delete yearGroups[undefined]
@@ -577,8 +607,7 @@ function shuffle(a) {
 }
 
 // Center the graph
-var initialScale = 0.75;
-svg.call(zoom.transform, d3.zoomIdentity.translate((svg.attr("width") - g.graph().width * initialScale) / 2, 20).scale(initialScale));
+var initialScale = 0.6;
+svg.call(zoom.transform, d3.zoomIdentity.translate((svg.attr("width") - 900) / 2, 100).scale(initialScale));
 
-svg.attr('height', g.graph().height * initialScale + 40);
 </script>

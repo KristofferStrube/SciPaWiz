@@ -120,7 +120,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
         function returnInfo(respons) {
             if (!Array.isArray(respons)) return;
             if (respons.length == 0) return;
-            infoCallback(doi, respons[0].title, respons[0].author, respons[0].year)
+            infoCallback(doi, respons[0].title, respons[0].source_title, respons[0].author, respons[0].year)
             count.add(doi)
             document.getElementById('count').innerHTML = count.size;
         }
