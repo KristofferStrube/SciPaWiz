@@ -79,12 +79,16 @@ text {
     </div>
     <div class="col-lg-2" style="border:1;">
       <h1>Chains!</h1>
-      <div id="cliqueList"></div>
+      <div style="height: 500px;overflow-y: scroll;">
+        <div id="cliqueList"></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
+var data = data;
+
 var cliques
 
 var rootnode = "10.1137/1.9781611973099.49"
@@ -92,6 +96,8 @@ var rootnode = "10.1137/1.9781611973099.49"
 var edges = {}
 
 var ExclusionSet = new Set();
+
+ExclusionSet.add("10.1137/1.9781611973099.49")
 
 var pressedKeys = {};
 window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
@@ -122,11 +128,9 @@ selectPaperButtonElement.addEventListener("click", () => newGraph(selectPaperEle
 var stopFetchButtonElement = document.getElementById('stopFetchButton');
 stopFetchButtonElement.addEventListener("click", () => cancelToken = true);
 
-newGraph(rootnode);
-
 function newGraph(id) {
   data = [];
-  ExclusionSet = new Set();
+  ExclusionSet = new Set([id]);
   cancelToken = false;
   count = new Set();
   countCiters = new Set();
@@ -135,6 +139,8 @@ function newGraph(id) {
   document.getElementById('total').innerHTML = total.size;
   LoadPaper(id, layersElement.value, infoCallback, citersCallback);
 }
+
+updateGraph();
 
 function updateGraph() {
   edges = {}
