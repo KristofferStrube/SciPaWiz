@@ -407,10 +407,12 @@ function nxclean() {
     // Identify keywords
     var keyWords = {}
     clique.nodes.forEach(node => {
-      remove = ["-", "!", "$", "(", ")", "/", "\n", ",", ":", "."]
+      remove = ["!", "$", "&", "(", ")", "/", "\n", ",", ":", ".", "'", "´", "|", "`", "[", "]", "*", "^"]
       sanitized_title = states[node].title != undefined ? remove.reduce((t, sym) => t.replaceAll(sym, ""), states[node].title.toLowerCase()) : ""
       words_in_title = sanitized_title.split(" ")
-      words_in_title.forEach(word => keyWords[word] != undefined && word.length > 2 ? keyWords[word]++: keyWords[word] = 1)
+      ignored_words = ["for", "to", "from", "and", "or", "in", "the", "a", "an", "of", "with", "where", "on", "by"];
+      sanitized_words_in_title = words_in_title.filter(w => !ignored_words.includes(w));
+      sanitized_words_in_title.forEach(word => keyWords[word] != undefined && word.length > 2 ? keyWords[word]++: keyWords[word] = 1)
     })
     function sortKeyValues(a, b) {
       if ( keyWords[a] > keyWords[b] ){
