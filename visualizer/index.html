@@ -194,8 +194,8 @@ function moveToClique(color) {
 	    midY = (max_y + min_y) / 2;
 
 
-  var scale = (0.8/(Math.max((max_x-min_x) / 960, (max_y-min_y) / 600)));
-  var translate = [960 / 2 - scale * midX, 600 / 2 - scale * midY];
+  var scale = (0.8/(Math.max((max_x-min_x) / 900, (max_y-min_y) / 600)));
+  var translate = [900 / 2 - scale * midX, 600 / 2 - scale * midY];
 
   svg.transition().duration(1000).call(zoom.transform, d3.zoomIdentity
   .translate(translate[0], translate[1])
