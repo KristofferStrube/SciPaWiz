@@ -443,7 +443,7 @@ function nxclean() {
       remove = ["!", "$", "&", "(", ")", "/", "\n", ",", ":", ".", "'", "´", "|", "`", "[", "]", "*", "^"]
       sanitized_title = states[node].title != undefined ? remove.reduce((t, sym) => t.replaceAll(sym, ""), states[node].title.toLowerCase()) : ""
       words_in_title = sanitized_title.split(" ")
-      ignored_words = ["for", "to", "from", "and", "or", "in", "the", "a", "an", "of", "with", "where", "on", "by"];
+      ignored_words = ["for", "to", "from", "and", "or", "in", "the", "a", "an", "of", "with", "where", "on", "by", "as", "what", "who", "which", "whom", "when", ];
       sanitized_words_in_title = words_in_title.filter(w => !ignored_words.includes(w));
       sanitized_words_in_title.forEach(word => keyWords[word] != undefined && word.length > 2 ? keyWords[word]++: keyWords[word] = 1)
     })
