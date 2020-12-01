@@ -1,7 +1,7 @@
 <!doctype html>
 
 <meta charset="utf-8">
-<title>Dagre D3 Demo: Tooltip on Hover</title>
+<title>Citation Grapth Tool</title>
 
 <link rel="stylesheet" href="demo.css">
 <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
@@ -51,25 +51,57 @@ text {
 
 <div class="container">
   <div class="row">
-    <div class="col-12">
-      <label for="author">author:</label><input id="author" />
-      <button id="authorButton" >
+    <div class="col">
+      <h2>Citation Graph Tool</h2>
+      <hr />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="author">Author:</label>
+    </div>
+    <div class="col col-lg-9">
+      <input id="author" class="form-control" />
+    </div>
+    <div class="col col-lg-2">
+      <button id="authorButton" class="btn btn-info" >
         Fetch authors papers
-      </button><br />
-      <label for="layers">Layers:</label><input id="layers" value="3" /><br />
-
-      <select id="selectPaper">
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="layers">Layers:</label>
+    </div>
+    <div class="col col-lg-9">
+      <input id="layers" value="3" class="form-control" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="selectPaper">Papers:</label>
+    </div>
+    <div class="col col-lg-9">
+      <select id="selectPaper" class="form-control">
         <option></option>
       </select>
-      <button id="selectPaperButton">
-        Select Paper
+    </div>
+    <div class="col col-lg-2">
+      <button id="selectPaperButton" class="btn btn-success" >
+        Show Paper!
       </button>
-      <br />
-      <button id="stopFetchButton">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-lg-1">
+      <span id="count"></span>/<span id="total"></span>
+    </div>
+    <div class="col col-lg-9">
+    </div>
+    <div class="col col-lg-2">
+      <button id="stopFetchButton" class="btn btn-danger" >
         Stop Fetching Prematurely.
       </button>
-      <br />
-      <span id="count"></span>/<span id="total"></span>
     </div>
   </div>
   <div class="row">
@@ -78,10 +110,15 @@ text {
       </svg>
     </div>
     <div class="col-lg-2" style="border:1;">
-      <h1>Chains!</h1>
+      <h3>Chains</h3>
       <div style="height: 500px;overflow-y: scroll;">
         <div id="cliqueList"></div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <h3>History</h3>
     </div>
   </div>
   <div class="row">
