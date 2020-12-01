@@ -186,19 +186,20 @@ function moveToClique(color) {
   var max_y = -100000000
   var min_y = 100000000
   clique.nodes.forEach(node => {
-    var domElement = inner.select("#node" + queryId(node))._groups[0][0]
+    var domElement = inner.select("#node" + queryId(node))._groups[0][0] 
     var x = domElement.transform.baseVal[0].matrix.e;
     var y = domElement.transform.baseVal[0].matrix.f;
     max_x = Math.max(x, max_x);
     max_y = Math.max(y, max_y);
     min_x = Math.min(x, min_x);
-    min_y = Math.min(x, min_y);
+    min_y = Math.min(y, min_y);
   })
 
   var midX = (max_x + min_x) / 2,
 	    midY = (max_y + min_y) / 2;
 
-  var scale = (0.9/Math.max((max_x-min_x) / 900, (max_y-min_y) / 600));
+
+  var scale = (0.8/(Math.max((max_x-min_x) / 900, (max_y-min_y) / 600)));
   var translate = [900 / 2 - scale * midX, 600 / 2 - scale * midY];
 
   svg.transition().duration(1000).call(zoom.transform, d3.zoomIdentity
