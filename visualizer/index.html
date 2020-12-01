@@ -56,6 +56,7 @@ text {
       <hr />
     </div>
   </div>
+
   <div class="row">
     <div class="col col-lg-1">
       <label for="author">Author:</label>
@@ -64,19 +65,24 @@ text {
       <input id="author" class="form-control" />
     </div>
     <div class="col col-lg-2">
-      <button id="authorButton" class="btn btn-info" >
+      <button id="authorButton" class="btn btn-info" style="width:100%;" >
         Fetch authors papers
       </button>
     </div>
   </div>
+
   <div class="row">
     <div class="col col-lg-1">
       <label for="layers">Layers:</label>
     </div>
     <div class="col col-lg-9">
-      <input id="layers" value="3" class="form-control" />
+      <input type="range" id="layers" value="3" min="1" max="5" class="form-control" oninput="document.getElementById('layers_show').innerHTML = this.value" />
+    </div>
+    <div class="col col-lg-2">
+      <p id="layers_show">3</p>
     </div>
   </div>
+
   <div class="row">
     <div class="col col-lg-1">
       <label for="selectPaper">Papers:</label>
@@ -87,11 +93,12 @@ text {
       </select>
     </div>
     <div class="col col-lg-2">
-      <button id="selectPaperButton" class="btn btn-success" >
+      <button id="selectPaperButton" class="btn btn-success" style="width:100%;" >
         Show Paper!
       </button>
     </div>
   </div>
+
   <div class="row">
     <div class="col col-lg-1">
       <span id="count"></span>/<span id="total"></span>
@@ -99,19 +106,19 @@ text {
     <div class="col col-lg-9">
     </div>
     <div class="col col-lg-2">
-      <button id="stopFetchButton" class="btn btn-danger" >
-        Stop Fetching Prematurely.
+      <button id="stopFetchButton" class="btn btn-danger" style="width:100%;" >
+        Stop Execution!
       </button>
     </div>
   </div>
   <div class="row">
     <div class="col-lg-10">
-      <svg width=960 height=600 >
+      <svg width="960" height="600">
       </svg>
     </div>
-    <div class="col-lg-2" style="border:1;">
+    <div class="col-lg-2">
       <h3>Chains</h3>
-      <div style="height: 500px;overflow-y: scroll;">
+      <div style="height: 500px;overflow-y: scroll;" class="form-control">
         <div id="cliqueList"></div>
       </div>
     </div>
