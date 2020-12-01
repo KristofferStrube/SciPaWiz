@@ -19,6 +19,9 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
 <style id="css">
 text {
   font-weight: 300;
@@ -124,6 +127,15 @@ text {
     </div>
   </div>
   <div class="row">
+    <div class="col col-1">
+      <label for="colors" >Colors:</label>
+    </div>
+    <div class="col">
+      <input type="checkbox" id="colors" checked data-toggle="toggle" onchange="updateGraph()">
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col">
       <h3>History</h3>
     </div>
@@ -214,8 +226,12 @@ function updateGraph() {
     var d = inner.select("#" + e + " > path")._groups[0][0].getAttribute("d")
     inner.select("#" + e).html("");
     for (i = 0; i<edges[e].length; i++) {
+      var color = edges[e][i];
+      if (!document.getElementById("colors").checked) {
+        color = "black";
+      }
       inner.select("#" + e).append("path")
-        .attr("style", `stroke:${edges[e][i]};stroke-width:${edges[e].length*4};stroke-dasharray:4, ${4*(edges[e].length-1)};stroke-dashoffset:${4*i}`)
+        .attr("style", `stroke:${color};stroke-width:${edges[e].length*4};stroke-dasharray:4, ${4*(edges[e].length-1)};stroke-dashoffset:${4*i}`)
         .attr("d", d)
         .attr("class", "path")
     }
@@ -256,7 +272,7 @@ function moveToClique(color) {
 function highlightClique(color) {
   clique = cliques.filter(clique => clique.color == color)[0];
 
-  clique.edges.forEach(e => {
+  clique.edges.forEach(e => { 
     var d = inner.select("#" + e + " > path")._groups[0][0].getAttribute("d")
     inner.select("#" + e).append("path")
         .attr("style", `stroke:${color};stroke-width:${edges[e].length*4*3};opacity:0.5`)
@@ -468,11 +484,15 @@ function nxclean() {
           edges[id].push(color);
         } else {
           edges[id] = [color];
-        }  
+        }
+        var strokeColor = color
+        if (!document.getElementById("colors").checked) {
+          strokeColor = "black"
+        }
         if (clique.nodes.length == 2) {
           edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`}])
         } else {
-          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`}])
+          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${strokeColor}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`}])
         }
       }
     })
