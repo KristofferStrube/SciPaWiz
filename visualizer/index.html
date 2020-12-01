@@ -535,10 +535,10 @@ function nxclean() {
 
   edgeList.forEach((edge, i) => {
     var weight;
-    if (!document.getElementById("renderMode1").checked) {
+    if (document.getElementById("renderMode1").checked) {
       weight = i;
     }
-    if (!document.getElementById("renderMode2").checked) {
+    if (document.getElementById("renderMode2").checked) {
       weight = edgeList.length-i;
     }
     var id = queryId("edge"+(edge[0]+edge[1]));
