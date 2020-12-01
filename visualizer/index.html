@@ -84,11 +84,14 @@ text {
       </div>
     </div>
   </div>
+  <div class="row">
+    <div class="col" id="history">
+
+    </div>
+  </div>
 </div>
 
 <script>
-var data = data;
-
 var cliques
 
 var rootnode = "10.1137/1.9781611973099.49"
@@ -97,7 +100,7 @@ var edges = {}
 
 var ExclusionSet = new Set();
 
-ExclusionSet.add("10.1137/1.9781611973099.49")
+var graphHistory = []
 
 var pressedKeys = {};
 window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
@@ -117,7 +120,9 @@ var svg = d3.select("svg"),
 
 var authorElement = document.getElementById('author');
 var selectPaperElement = document.getElementById('selectPaper');
-var layersElement = document.getElementById('layers')
+var layersElement = document.getElementById('layers');
+
+var historyElement = document.getElementById('history');
 
 var authorButtonElement = document.getElementById('authorButton');
 authorButtonElement.addEventListener("click", () => GetPapersFromAuthor(authorElement.value, selectPaperElement));
@@ -132,7 +137,7 @@ stopFetchButtonElement.addEventListener("click", () => cancelToken = true);
 
 function newGraph(id) {
   data = [];
-  ExclusionSet = new Set([id]);
+  ExclusionSet = new Set();
   cancelToken = false;
   count = new Set();
   countCiters = new Set();
@@ -224,7 +229,7 @@ function infoCallback(doi, title, title_source, author, year) {
     data.filter(p => p.doi == doi)[0].author = author
     data.filter(p => p.doi == doi)[0].year = year
   }
-  updateGraph(doi);
+  updateGraph();
 }
 
 function citersCallback(doi, citers) {
@@ -233,10 +238,14 @@ function citersCallback(doi, citers) {
   } else {
     data.filter(p => p.doi == doi)[0].citers = citers
   }
-  updateGraph(doi);
+  updateGraph();
 }
 
 function extendGraph(doi) {
+  var i = graphHistory.length
+  var edgesCopy = Object.assign({}, data);
+  graphHistory.push({data: [...data], ExclusionSet: new Set(ExclusionSet), edges: {...edges}, count: new Set(count), countCiters: new Set(countCiters), total: new Set(total), text: "♥", i: i});
+  renderHistory();
   if (pressedKeys[17]) {
     newGraph(doi);
   } else {
@@ -246,6 +255,34 @@ function extendGraph(doi) {
     document.getElementById('total').innerHTML = total.size;
     LoadPaper(doi, 2, infoCallback, citersCallback);
   }
+}
+
+function goBackInTime(i) {
+  console.log(graphHistory[i])
+  console.log(graphHistory[i].data)
+  data = graphHistory[i].data;
+  console.log(data)
+  ExclusionSet = graphHistory[i].ExclusionSet
+  edges = graphHistory[i].edges
+  count = graphHistory[i].count
+  countCiters = graphHistory[i].countCiters
+  total = graphHistory[i].total
+  document.getElementById('count').innerHTML = count.size;
+  document.getElementById('total').innerHTML = total.size;
+  graphHistory = graphHistory.slice(0, i);
+  renderHistory();
+  updateGraph();
+}
+
+function renderHistory() {
+  historyElement.innerHTML = "";
+  graphHistory.forEach(snap => {
+    var snapshotElement = document.createElement('span');
+    snapshotElement.className = "badge badge-primary";
+    snapshotElement.innerHTML = snap.text;
+    snapshotElement.onclick = () => goBackInTime(snap.i);
+    historyElement.appendChild(snapshotElement);
+  });
 }
 
 // Set up zoom support
@@ -442,7 +479,7 @@ function nxclean() {
       remove = ["!", "$", "&", "(", ")", "/", "\n", ",", ":", ".", "'", "´", "|", "`", "[", "]", "*", "^"]
       sanitized_title = states[node].title != undefined ? remove.reduce((t, sym) => t.replaceAll(sym, ""), states[node].title.toLowerCase()) : ""
       words_in_title = sanitized_title.split(" ")
-      ignored_words = ["for", "to", "from", "and", "or", "in", "the", "a", "an", "of", "with", "where", "on", "by"];
+      ignored_words = [" ", "", "for", "to", "from", "and", "or", "in", "the", "a", "an", "of", "with", "where", "on", "by"];
       sanitized_words_in_title = words_in_title.filter(w => !ignored_words.includes(w));
       sanitized_words_in_title.forEach(word => keyWords[word] != undefined && word.length > 2 ? keyWords[word]++: keyWords[word] = 1)
     })
