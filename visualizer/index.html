@@ -129,52 +129,44 @@ text {
   </div>
 
   <div class="row">
-    <div class="col">
+    <div class="col col-lg-6">
       <h3>Graph filters</h3>
+      <div class="row">
+        <div class="col col-lg-3">
+          <label for="colors" >Colors:</label>
+        </div>
+        <div class="col col-lg-9">
+          <input type="checkbox" id="colors" checked data-toggle="toggle" onchange="updateGraph()">
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col col-lg-3">
+          <label for="colors" >Renderer:</label>
+        </div>
+        <div class="col col-lg-9">
+          <input type="radio" id="renderMode1" checked name="rate" value="0" onchange="updateGraph()" class="form-check-input">
+          <label for="renderMode1" class="form-check-label">End Heavy Render</label>
+          <input type="radio" id="renderMode2" name="rate" value="1" onchange="updateGraph()" class="form-check-input">
+          <label for="renderMode2" class="form-check-label">Top Heavy Render</label>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col col-lg-3">
+          <label for="layers">Experimental - Chain collapsion:</label>
+        </div>
+        <div class="col col-lg-8">
+          <input type="range" id="collaps" value="0" min="0" max="50" class="form-control" onclick="collaps = this.value; updateGraph()" oninput="document.getElementById('collaps_show').innerHTML = this.value" />
+        </div>
+        <div class="col col-lg-1">
+          <p id="collaps_show">0</p>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="row">
-    <div class="col col-lg-1">
-      <label for="colors" >Colors:</label>
-    </div>
-    <div class="col col-lg-11">
-      <input type="checkbox" id="colors" checked data-toggle="toggle" onchange="updateGraph()">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col col-lg-1">
-      <label for="colors" >Renderer:</label>
-    </div>
-    <div class="col col-lg-11">
-      <input type="radio" id="renderMode1" checked name="rate" value="0" onchange="updateGraph()" class="form-check-input">
-      <label for="renderMode1" class="form-check-label">End Heavy Render</label>
-      <input type="radio" id="renderMode2" name="rate" value="1" onchange="updateGraph()" class="form-check-input">
-      <label for="renderMode2" class="form-check-label">Top Heavy Render</label>
-    </div>
-  </div>
-  
-  <div class="row">
-    <div class="col col-lg-1">
-      <label for="layers">Experimental - Chain collapsion:</label>
-    </div>
-    <div class="col col-lg-9">
-      <input type="range" id="collaps" value="0" min="0" max="50" class="form-control" onclick="collaps = this.value; updateGraph()" oninput="document.getElementById('collaps_show').innerHTML = this.value" />
-    </div>
-    <div class="col col-lg-2">
-      <p id="collaps_show">0</p>
-    </div>
-  </div>
-
-
-  <div class="row">
-    <div class="col">
+    <div class="col col-lg-6">
       <h3>History</h3>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col" id="history">
-
+      <div class="col" id="history"></div>
     </div>
   </div>
 </div>
