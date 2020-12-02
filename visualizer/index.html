@@ -654,7 +654,7 @@ function nxclean() {
     
     // Generate innerHtml
     elem.innerHTML = `
-    <div style="display:inline-block;height:15px;width:15px;padding-left:4px;padding-top:0px;line-height:1;color:white;background-color:${clique.color}">${clique.nodes.length}</div>
+    <div style="display:inline-block;height:15px;min-width:15px;padding-right:4px;padding-left:4px;padding-top:0px;line-height:1.2;color:white;background-color:${clique.color}">${clique.nodes.length}</div>
     <b> ${importWords[0]}, ${importWords[1]}, ${importWords[2]}</b><br />
     ${earliestYear} - ${latestYear}<br />` +
     (importantAuthors[0] != undefined ? `${importantAuthors[0][0]} (${importantAuthors[0][1]}/${clique.nodes.length})` : "") +
