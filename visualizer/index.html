@@ -547,6 +547,7 @@ function nxclean() {
 
   //Sort edges for rendering order and add them
   edgeList = []
+  edgeListDash = []
   cliques.forEach(clique => {
     var color = clique.color;
     clique.nodes.forEach((node, index) => {   
@@ -564,9 +565,9 @@ function nxclean() {
           strokeColor = "black"
         }
         if (clique.nodes.length == 2) {
-          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`}])
+          edgeListDash.push([node, clique.nodes[index+1], {curve: d3.curveBasis, weight: 1, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`}])
         } else {
-          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${strokeColor}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`}])
+          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, weight: 2, id:id, style: `stroke: ${strokeColor}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`}])
         }
       }
     })
@@ -594,19 +595,23 @@ function nxclean() {
 
   //edgeList = g.edges().map(x => [x["w"],x["v"],{"label":""}])
   edgeList = edgeList.sort(edgeSorter)
+  edgeListDash = edgeListDash.sort(edgeSorter)
 
   edgeList.forEach((edge, i) => {
     var weight;
-    if (document.getElementById("renderMode1").checked) {
-      weight = i;
-    }
-    if (document.getElementById("renderMode2").checked) {
-      weight = edgeList.length-i;
-    }
+      if (document.getElementById("renderMode1").checked) {
+        weight = i;
+      }
+      if (document.getElementById("renderMode2").checked) {
+        weight = edgeList.length-i;
+      } 
     var id = queryId("edge"+(edge[0]+edge[1]));
     edge[2].weight = weight
-    g.setEdge(edge[0], edge[1], edge[2])
-    
+    g.setEdge(edge[0], edge[1], edge[2])   
+  })
+  edgeListDash.forEach((edge, i) => {
+    var id = queryId("edge"+(edge[0]+edge[1]));
+    g.setEdge(edge[0], edge[1], edge[2])   
   })
 
 
