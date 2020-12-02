@@ -711,8 +711,6 @@ function nxclean() {
     return 0;
   }
 
-  g.setNode("LastNode", {label:"" , style: `stroke: transparent; fill: white`})
-
 
   var years = Object.keys(yearGroups).filter(year => year != "" && year != null && year != undefined);
   for (i = 0; i<years.length-1; i++) {
@@ -722,15 +720,6 @@ function nxclean() {
       var id = queryId("edge"+(node+nextGroupRep));
       if (!edges.hasOwnProperty(id)) {
         g.setEdge(node, nextGroupRep, {style: `stroke: transparent; stroke-width: 1;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
-      }
-    })
-  }
-  if (years.length > 0) {
-    var lastGroup = yearGroups[years[years.length-1]].map(node => node.doi)
-    lastGroup.forEach(node => {
-      var id = queryId("edge"+(node+nextGroupRep));
-      if (!edges.hasOwnProperty(id)) {
-        g.setEdge(node, "LastNode", {style: `stroke: transparent; stroke-width: 1;`, arrowheadStyle: `fill: transparent; stroke: transparent`})
       }
     })
   }
