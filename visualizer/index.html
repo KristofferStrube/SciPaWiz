@@ -148,6 +148,20 @@ text {
   </div>
 
   <div class="row">
+    <div class="col col-lg-1">
+      <label for="layers">Experimental - Chain collapsion:</label>
+    </div>
+    <div class="col col-lg-9">
+      <input type="range" id="collaps" value="0" min="0" max="50" class="form-control" onclick="collaps = this.value; updateGraph()" oninput="document.getElementById('collaps_show').innerHTML = this.value" />
+    </div>
+    <div class="col col-lg-2">
+      <p id="collaps_show">0</p>
+    </div>
+  </div>
+
+
+
+  <div class="row">
     <div class="col">
       <h3>History</h3>
     </div>
@@ -160,6 +174,7 @@ text {
 </div>
 
 <script>
+var collaps = 0  
 var cliques
 
 var rootnode = "10.1137/1.9781611973099.49"
@@ -451,6 +466,47 @@ function nxclean() {
   };
 
   cliques.forEach(clique => {clique.sort(sorter)})
+
+  
+
+  //Collapse cliques based on collaption factor
+  //var collaps = 0
+  var collapsed_cliques;
+  if (collaps > 0) {
+    long_cliques = cliques.filter(e => e.length > 2)
+    collapsed_cliques = new Array(long_cliques.length);
+    //console.log(collapsed_cliques[2])
+    for(var i = 0; i < long_cliques.length; i++) {
+      if (long_cliques[i] == []) {
+        continue
+      }
+      var collapsing = false
+      for(var j = i+1; j < long_cliques.length; j++)  {
+        if (long_cliques[j] == []) {
+          continue
+        }
+        var union = long_cliques[i].filter(e => long_cliques[j].includes(e)).length
+        if (union != 0 && long_cliques[i].length-union <= collaps && long_cliques[j].length-union <= collaps) {
+          collapsing = true
+          test = long_cliques[i].concat(long_cliques[j])
+          combine = new Set(test)
+          collapsed_cliques[i] = Array.from(combine)
+          long_cliques[i] = collapsed_cliques[i]
+          long_cliques[j] = [] 
+        }
+      }
+      if (!collapsing) { 
+        collapsed_cliques[i] = long_cliques[i] 
+      }
+    }
+    
+    //console.log(collapsed_cliques.filter(x => x != empty).length)
+    collapsed_cliques = collapsed_cliques.filter(e => e.length != 0)
+    cliques = collapsed_cliques.concat(cliques.filter(e => e.length == 2))
+    
+    cliques.forEach(clique => {clique.sort(sorter)})
+  }
+
 
   cliques = cliques.map(clique => {return {nodes: clique, edges: []}})
 
