@@ -44,12 +44,18 @@ text {
     stroke: #333;
     fill: #fff;
     stroke-width: 1.5px;
+    z-index: 3;
 }
 
 .edgePath path.path {
     stroke: #333;
     fill: none;
     stroke-width: 1.5px;
+    z-index: 2;
+}
+
+.glower {
+    z-index: 1;
 }
 
 .arrowhead {
