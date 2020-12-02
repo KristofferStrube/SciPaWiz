@@ -1,7 +1,7 @@
 <!doctype html>
 
 <meta charset="utf-8">
-<title>Dagre D3 Demo: Tooltip on Hover</title>
+<title>Citation Grapth Tool</title>
 
 <link rel="stylesheet" href="demo.css">
 <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
@@ -10,14 +10,18 @@
 <!-- Pull in JQuery dependencies -->
 <link rel="stylesheet" href="tipsy.css">
 <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="tipsy.js"></script>
-<script src="data.js"></script>
-<script src="jsnetworkx.js"></script>
-<script src="loadData.js"></script>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+<script src="tipsy.js"></script>
+<script src="data.js"></script>
+<script src="jsnetworkx.js"></script>
+<script src="loadData.js"></script>
 
 <style id="css">
 text {
@@ -51,44 +55,111 @@ text {
 
 <div class="container">
   <div class="row">
-    <div class="col-12">
-      <label for="author">author:</label><input id="author" />
-      <button id="authorButton" >
-        Fetch authors papers
-      </button><br />
-      <label for="layers">Layers:</label><input id="layers" value="3" /><br />
+    <div class="col">
+      <h2>Citation Graph Tool</h2>
+      <hr />
+    </div>
+  </div>
 
-      <select id="selectPaper">
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="author">Author:</label>
+    </div>
+    <div class="col col-lg-9">
+      <input id="author" class="form-control" />
+    </div>
+    <div class="col col-lg-2">
+      <button id="authorButton" class="btn btn-info" style="width:100%;" >
+        Fetch authors papers
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="layers">Layers:</label>
+    </div>
+    <div class="col col-lg-9">
+      <input type="range" id="layers" value="3" min="1" max="5" class="form-control" oninput="document.getElementById('layers_show').innerHTML = this.value" />
+    </div>
+    <div class="col col-lg-2">
+      <p id="layers_show">3</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="selectPaper">Papers:</label>
+    </div>
+    <div class="col col-lg-9">
+      <select id="selectPaper" class="form-control">
         <option></option>
       </select>
-      <button id="selectPaperButton">
-        Select Paper
+    </div>
+    <div class="col col-lg-2">
+      <button id="selectPaperButton" class="btn btn-success" style="width:100%;" >
+        Show Paper!
       </button>
-      <br />
-      <button id="stopFetchButton">
-        Stop Fetching Prematurely.
-      </button>
-      <br />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col col-lg-1">
       <span id="count"></span>/<span id="total"></span>
+    </div>
+    <div class="col col-lg-9">
+    </div>
+    <div class="col col-lg-2">
+      <button id="stopFetchButton" class="btn btn-danger" style="width:100%;" >
+        Stop Execution!
+      </button>
     </div>
   </div>
   <div class="row">
-    <div class="col-lg-10">
-      <svg width=960 height=600 >
+    <div class="col col-lg-10">
+      <svg width="960" height="600">
       </svg>
     </div>
-    <div class="col-lg-2" style="border:1;">
-      <h1>Chains!</h1>
-      <div style="height: 500px;overflow-y: scroll;">
+    <div class="col col-lg-2">
+      <h3>Chains</h3>
+      <div style="height: 500px;overflow-y: scroll;" class="form-control">
         <div id="cliqueList"></div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="colors" >Colors:</label>
+    </div>
+    <div class="col col-lg-11">
+      <input type="checkbox" id="colors" checked data-toggle="toggle" onchange="updateGraph()">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-lg-1">
+      <label for="colors" >Renderer:</label>
+    </div>
+    <div class="col col-lg-11">
+      <input type="radio" id="renderMode1" checked name="rate" value="0" onchange="updateGraph()" class="form-check-input">
+      <label for="renderMode1" class="form-check-label">End Heavy Render</label>
+      <input type="radio" id="renderMode2" name="rate" value="1" onchange="updateGraph()" class="form-check-input">
+      <label for="renderMode2" class="form-check-label">Top Heavy Render</label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h3>History</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col" id="history">
+
     </div>
   </div>
 </div>
 
 <script>
-var data = data;
-
 var cliques
 
 var rootnode = "10.1137/1.9781611973099.49"
@@ -97,7 +168,7 @@ var edges = {}
 
 var ExclusionSet = new Set();
 
-ExclusionSet.add("10.1137/1.9781611973099.49")
+var graphHistory = []
 
 var pressedKeys = {};
 window.onkeyup = function(e) { pressedKeys[e.keyCode] = false; }
@@ -117,7 +188,9 @@ var svg = d3.select("svg"),
 
 var authorElement = document.getElementById('author');
 var selectPaperElement = document.getElementById('selectPaper');
-var layersElement = document.getElementById('layers')
+var layersElement = document.getElementById('layers');
+
+var historyElement = document.getElementById('history');
 
 var authorButtonElement = document.getElementById('authorButton');
 authorButtonElement.addEventListener("click", () => GetPapersFromAuthor(authorElement.value, selectPaperElement));
@@ -132,7 +205,7 @@ stopFetchButtonElement.addEventListener("click", () => cancelToken = true);
 
 function newGraph(id) {
   data = [];
-  ExclusionSet = new Set([id]);
+  ExclusionSet = new Set();
   cancelToken = false;
   count = new Set();
   countCiters = new Set();
@@ -165,8 +238,12 @@ function updateGraph() {
     var d = inner.select("#" + e + " > path")._groups[0][0].getAttribute("d")
     inner.select("#" + e).html("");
     for (i = 0; i<edges[e].length; i++) {
+      var color = edges[e][i];
+      if (!document.getElementById("colors").checked) {
+        color = "black";
+      }
       inner.select("#" + e).append("path")
-        .attr("style", `stroke:${edges[e][i]};stroke-width:${edges[e].length*4};stroke-dasharray:4, ${4*(edges[e].length-1)};stroke-dashoffset:${4*i}`)
+        .attr("style", `stroke:${color};stroke-width:${edges[e].length*4};stroke-dasharray:4, ${4*(edges[e].length-1)};stroke-dashoffset:${4*i}`)
         .attr("d", d)
         .attr("class", "path")
     }
@@ -207,7 +284,7 @@ function moveToClique(color) {
 function highlightClique(color) {
   clique = cliques.filter(clique => clique.color == color)[0];
 
-  clique.edges.forEach(e => {
+  clique.edges.forEach(e => { 
     var d = inner.select("#" + e + " > path")._groups[0][0].getAttribute("d")
     inner.select("#" + e).append("path")
         .attr("style", `stroke:${color};stroke-width:${edges[e].length*4*3};opacity:0.5`)
@@ -225,7 +302,7 @@ function infoCallback(doi, title, title_source, author, year) {
     data.filter(p => p.doi == doi)[0].author = author
     data.filter(p => p.doi == doi)[0].year = year
   }
-  updateGraph(doi);
+  updateGraph();
 }
 
 function citersCallback(doi, citers) {
@@ -234,10 +311,14 @@ function citersCallback(doi, citers) {
   } else {
     data.filter(p => p.doi == doi)[0].citers = citers
   }
-  updateGraph(doi);
+  updateGraph();
 }
 
 function extendGraph(doi) {
+  var i = graphHistory.length
+  var edgesCopy = Object.assign({}, data);
+  graphHistory.push({data: [...data], ExclusionSet: new Set(ExclusionSet), edges: {...edges}, count: new Set(count), countCiters: new Set(countCiters), total: new Set(total), text: "♥", i: i});
+  renderHistory();
   if (pressedKeys[17]) {
     newGraph(doi);
   } else {
@@ -247,6 +328,34 @@ function extendGraph(doi) {
     document.getElementById('total').innerHTML = total.size;
     LoadPaper(doi, 2, infoCallback, citersCallback);
   }
+}
+
+function goBackInTime(i) {
+  console.log(graphHistory[i])
+  console.log(graphHistory[i].data)
+  data = graphHistory[i].data;
+  console.log(data)
+  ExclusionSet = graphHistory[i].ExclusionSet
+  edges = graphHistory[i].edges
+  count = graphHistory[i].count
+  countCiters = graphHistory[i].countCiters
+  total = graphHistory[i].total
+  document.getElementById('count').innerHTML = count.size;
+  document.getElementById('total').innerHTML = total.size;
+  graphHistory = graphHistory.slice(0, i);
+  renderHistory();
+  updateGraph();
+}
+
+function renderHistory() {
+  historyElement.innerHTML = "";
+  graphHistory.forEach(snap => {
+    var snapshotElement = document.createElement('span');
+    snapshotElement.className = "badge badge-primary";
+    snapshotElement.innerHTML = snap.text;
+    snapshotElement.onclick = () => goBackInTime(snap.i);
+    historyElement.appendChild(snapshotElement);
+  });
 }
 
 // Set up zoom support
@@ -387,11 +496,15 @@ function nxclean() {
           edges[id].push(color);
         } else {
           edges[id] = [color];
-        }  
+        }
+        var strokeColor = color
+        if (!document.getElementById("colors").checked) {
+          strokeColor = "black"
+        }
         if (clique.nodes.length == 2) {
           edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, style: "stroke-dasharray: 5, 5;", arrowheadStyle: `fill: transparent; stroke: transparent`}])
         } else {
-          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${color}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`}])
+          edgeList.push([node, clique.nodes[index+1], {curve: d3.curveBasis, id:id, style: `stroke: ${strokeColor}; stroke-width: 5;`, arrowheadStyle: `fill: transparent; stroke: transparent`}])
         }
       }
     })
@@ -421,7 +534,13 @@ function nxclean() {
   edgeList = edgeList.sort(edgeSorter)
 
   edgeList.forEach((edge, i) => {
-    weight = i//edgeList.length-i    
+    var weight;
+    if (document.getElementById("renderMode1").checked) {
+      weight = i;
+    }
+    if (document.getElementById("renderMode2").checked) {
+      weight = edgeList.length-i;
+    }
     var id = queryId("edge"+(edge[0]+edge[1]));
     edge[2].weight = weight
     g.setEdge(edge[0], edge[1], edge[2])
@@ -443,7 +562,9 @@ function nxclean() {
       remove = ["!", "$", "&", "(", ")", "/", "\n", ",", ":", ".", "'", "´", "|", "`", "[", "]", "*", "^"]
       sanitized_title = states[node].title != undefined ? remove.reduce((t, sym) => t.replaceAll(sym, ""), states[node].title.toLowerCase()) : ""
       words_in_title = sanitized_title.split(" ")
-      ignored_words = ["for", "to", "from", "and", "or", "in", "the", "a", "an", "of", "with", "where", "on", "by", "as", "what", "who", "which", "whom", "when", ];
+
+      ignored_words = ["for", "to", "from", "and", "or", "in", "the", "a", "an", "of", "with", "where", "on", "by", "as", "what", "who", "which", "whom", "when" ];
+
       sanitized_words_in_title = words_in_title.filter(w => !ignored_words.includes(w));
       sanitized_words_in_title.forEach(word => keyWords[word] != undefined && word.length > 2 ? keyWords[word]++: keyWords[word] = 1)
     })

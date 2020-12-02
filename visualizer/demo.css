@@ -20,6 +20,10 @@ section {
     margin-bottom: 3em;
 }
 
+.col {
+    margin-bottom: 5px;
+}
+
 section p {
     text-align: justify;
 }
