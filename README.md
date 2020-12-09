@@ -10,3 +10,9 @@ The project can be demoed at [kristofferstrube.github.io/ScientificPaperCitation
 Loaded paper by Kasper Green Larsen
 
 ![Screenshot of Paper by Kasper Green](./docs/Screenshot_IO_Paper.PNG)
+
+## Maintainers
+The project is constructed and maintained by:
+ - [@MARATIVE](https://github.com/MARATVE)
+ - [@Koenkalle](https://github.com/Koenkalle)
+ - [@KristofferStrube](https://github.com/KristofferStrube)
