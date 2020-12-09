@@ -1,5 +1,5 @@
 # Scientific Paper Citation Graph Visualization (SciPaCGVis)
-Project for Data Visualization (2020 fall) course at Aarhus University (Lecturer: Hans-Jörg Schultz)
+Project for Data Visualization (2020 fall) course at Aarhus University (Lecturer: Hans-Jörg Schulz)
 
 The project uses the DBLP and OpenCitations APIs to construct a visual representation of how scientific papers in the field of Computer Science cite each other.
 
