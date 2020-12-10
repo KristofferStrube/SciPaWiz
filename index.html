@@ -343,6 +343,7 @@ function extendGraph(doi) {
     ExclusionSet.add(doi)
     document.getElementById('total').innerHTML = total.size;
     LoadPaper(doi, 2, infoCallback, citersCallback);
+    updateGraph();
   }
 }
 
