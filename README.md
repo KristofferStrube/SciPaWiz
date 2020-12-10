@@ -1,10 +1,10 @@
-# Scientific Paper Citation Graph Visualization (SciPaCGVis)
+# SciPaWiz: A Tool For Explorative Visualization of Scientific Citation Networks
 Project for Data Visualization (2020 fall) course at Aarhus University (Lecturer: Hans-Jörg Schulz)
 
 The project uses the DBLP and OpenCitations APIs to construct a visual representation of how scientific papers in the field of Computer Science cite each other.
 
 ## Demo
-The project can be demoed at [kristofferstrube.github.io/ScientificPaperCitationGraphVisualisation](https://kristofferstrube.github.io/ScientificPaperCitationGraphVisualisation/) but it is also dependent on external APIs.
+The project can be demoed at [kristofferstrube.github.io/SciPaWiz](https://kristofferstrube.github.io/SciPaWiz/) but it is also dependent on external APIs.
 
 ## Screenshots
 Loaded paper by Kasper Green Larsen
