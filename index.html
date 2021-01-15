@@ -133,7 +133,7 @@ text {
   </div>
 
   <div class="row">
-    <div class="col col-lg-6">
+    <div class="col col-lg-5">
       <h3>Graph filters</h3>
       <div class="row">
         <div class="col col-lg-3">
@@ -168,9 +168,15 @@ text {
         </div>
       </div>
     </div>
-    <div class="col col-lg-6">
+    <div class="col col-lg-5">
       <h3>History</h3>
       <div class="col" id="history"></div>
+    </div>
+    <div class="col col-lg-2">
+      <h3>Import/Export graph</h3>
+      <input type="button" class="btn btn-primary" value="Export" id="exportButton"/>
+      <input type="button" class="btn btn-primary" value="Import" id="importButton"/><br>
+      <input class="col" class="form-control" id="dataInput" /><br><br>
     </div>
   </div>
 </div>
@@ -217,6 +223,23 @@ selectPaperButtonElement.addEventListener("click", () => newGraph(selectPaperEle
 
 var stopFetchButtonElement = document.getElementById('stopFetchButton');
 stopFetchButtonElement.addEventListener("click", () => cancelToken = true);
+
+var dataInputElement = document.getElementById('dataInput');
+
+var exportButtonElement = document.getElementById('exportButton');
+exportButtonElement.addEventListener("click", () => dataInputElement.value = JSON.stringify(data.map(node =>
+    ({
+      author: node.author,
+      citers: node.citers,
+      doi: node.doi,
+      title: node.title,
+      year: node.year,
+      title_source: node.title_source
+    })
+)));
+
+var importButtonElement = document.getElementById('importButton');
+importButtonElement.addEventListener("click", () => {data = JSON.parse(dataInputElement.value); updateGraph()});
 
 //newGraph("10.1137/1.9781611973099.49");
 
