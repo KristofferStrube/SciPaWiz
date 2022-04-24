@@ -5,6 +5,7 @@ The project uses the DBLP and OpenCitations APIs to construct a visual represent
 
 ## Demo
 The project can be demoed at [kristofferstrube.github.io/SciPaWiz](https://kristofferstrube.github.io/SciPaWiz/) but it is also dependent on external APIs.
+The tool is a proof-of-concept. It is recommended to load papers with less than 100 citations due to slow spaghetti code.
 
 ## Screenshots
 Loaded paper by Kasper Green Larsen
