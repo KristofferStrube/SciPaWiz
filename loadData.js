@@ -106,7 +106,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
             paperInfo.onreadystatechange = function() {
                 if (cancelToken) { paperInfo.onreadystatechange = undefined; return; }
                 if (this.readyState == 4 && this.status == 200) {
-                    var respons = JSON.parse(paperInfo.responseText);
+                    var respons = JSON.parse(paperInfo.responseText)[0];
                     respons.author = respons.author.replaceAll(/ \[.*?\]/g,'')
                     cachedInfo[doi] = respons;
                     localStorage.setItem('cachedInfo', JSON.stringify(cachedInfo));
