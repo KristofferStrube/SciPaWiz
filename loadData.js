@@ -109,6 +109,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                     var respons = JSON.parse(paperInfo.responseText);
                     if (respons[0] != undefined) {
                         respons[0].author = respons[0].author.replaceAll(/ \[.*?\]/g,'');
+                        respons[0].publisher = respons[0].publisher.replaceAll(/ \[.*?\]/g,'');
                     }
                     else {
                         console.log(respons)
