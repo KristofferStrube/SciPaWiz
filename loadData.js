@@ -107,7 +107,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                 if (cancelToken) { paperInfo.onreadystatechange = undefined; return; }
                 if (this.readyState == 4 && this.status == 200) {
                     var respons = JSON.parse(paperInfo.responseText)[0];
-                    if (respons != null) {
+                    if (respons != undefined) {
                         respons.author = respons.author.replaceAll(/ \[.*?\]/g,'');
                     }
                     else {
