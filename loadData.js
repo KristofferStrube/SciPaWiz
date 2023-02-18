@@ -106,12 +106,12 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
             paperInfo.onreadystatechange = function() {
                 if (cancelToken) { paperInfo.onreadystatechange = undefined; return; }
                 if (this.readyState == 4 && this.status == 200) {
-                    var respons = JSON.parse(paperInfo.responseText)[0];
-                    if (respons != undefined) {
-                        respons.author = respons.author.replaceAll(/ \[.*?\]/g,'');
+                    var respons = JSON.parse(paperInfo.responseText);
+                    if (respons[0] != undefined) {
+                        respons[0].author = respons[0].author.replaceAll(/ \[.*?\]/g,'');
                     }
                     else {
-                        console.log(JSON.parse(paperInfo.responseText))
+                        console.log(respons)
                     }
                     cachedInfo[doi] = respons;
                     localStorage.setItem('cachedInfo', JSON.stringify(cachedInfo));
