@@ -120,7 +120,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
         function returnInfo(respons) {
             if (!Array.isArray(respons)) return;
             if (respons.length == 0) return;
-            infoCallback(doi, respons[0].title, respons[0].publisher.replaceAll(/ \[.*?\]/g,''), respons[0].author.replaceAll(/ \[.*?\]/g,''), respons[0].pub_date.split('-')[0])
+            infoCallback(doi, respons[0].title, respons[0].venue.replaceAll(/ \[.*?\]/g,''), respons[0].author.replaceAll(/ \[.*?\]/g,''), respons[0].pub_date.split('-')[0])
             count.add(doi)
             document.getElementById('count').innerHTML = count.size;
         }
