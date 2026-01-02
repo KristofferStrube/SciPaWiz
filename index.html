@@ -461,7 +461,13 @@ function nxclean() {
   
   var states = cleanedData.reduce((dict, paper) => {dict[paper.doi] = paper; dict[paper.doi].citerCount = (paper.citers != null ? paper.citers.length : 0); return dict}, {})
 
-  var max = cleanedData.map(p => p.citers != null ? p.citers.length : 0).reduce((prev, length) => Math.max(prev, length))
+  var max = 0;
+  for (let p of cleanedData) {
+    if (p.citers == null) {
+      continue;
+    }
+    max = Math.max(max, p.citers.length);
+  }
 
   //Add nodes directly from the data
   Object.keys(states).forEach(function(state) {

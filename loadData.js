@@ -65,22 +65,38 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
                 returnCiters(cachedCiters[doi])
             } else {
                 var citersInfo = new XMLHttpRequest();
-                citersInfo.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        if (cancelToken) { citersInfo.onreadystatechange = undefined; return; }
-                        var respons = JSON.parse(citersInfo.responseText);
-                        cachedCiters[doi] = respons;
-                        localStorage.setItem('cachedCiters', JSON.stringify(cachedCiters));
-                        returnCiters(respons)
-                    }
-                };
+                let retries = 0;
+                citersInfo.onreadystatechange = handleRequestFinished;
                 citersInfo.open("POST", `https://kristoffer-strube.dk/API/Citations/Citers`, true);
                 citersInfo.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 citersInfo.send(`doi=${doi}`);
+
+                function handleRequestFinished() {
+                    if (this.readyState == 4) {
+                        if (this.status == 200) {
+                            if (cancelToken) { citersInfo.onreadystatechange = undefined; return; }
+                            var respons = JSON.parse(citersInfo.responseText);
+                            cachedCiters[doi] = respons;
+                            localStorage.setItem('cachedCiters', JSON.stringify(cachedCiters));
+                            returnCiters(respons)
+                        }
+                        else if (retries < 3) {
+                            console.log(`trying to fetch ${doi} again`);
+                            retries += 1;
+                            setTimeout(() => {
+                                citersInfo = new XMLHttpRequest();
+                                citersInfo.onreadystatechange = handleRequestFinished;
+                                citersInfo.open("POST", `https://kristoffer-strube.dk/API/Citations/Citers`, true);
+                                citersInfo.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                citersInfo.send(`doi=${doi}`);
+                            }, 5000 * retries);
+                        }
+                    }
+                };
             }
 
             function returnCiters(respons) {
-                var citers = respons.map(p => p.citing);
+                var citers = respons.map(p => p.citing).filter(citer => citer != "");
                 citersCallback(doi, citers)
                 if (layers - 1 != 0) {
                     total = union(total, citers);
