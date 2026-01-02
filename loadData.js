@@ -80,7 +80,7 @@ function LoadPaper(doi, layers, infoCallback, citersCallback) {
             }
 
             function returnCiters(respons) {
-                var citers = respons.map(p => p.citing.substring(8, p.citing.length));
+                var citers = respons.map(p => p.citing);
                 citersCallback(doi, citers)
                 if (layers - 1 != 0) {
                     total = union(total, citers);
